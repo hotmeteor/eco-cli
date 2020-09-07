@@ -3,8 +3,8 @@
 namespace Eco\EcoCli\Commands;
 
 use DateTime;
-use Github\Client;
 use Eco\EcoCli\Helpers;
+use Github\Client;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -200,7 +200,7 @@ class Command extends SymfonyCommand
 
         $key = strtoupper(trim($key));
 
-        $setting = $this->buildSetting($key, $value).PHP_EOL;
+        $setting = $this->buildSetting($key, $value);
 
         $temp_file = "{$file}.tmp";
 
@@ -223,9 +223,7 @@ class Command extends SymfonyCommand
         fclose($writing);
 
         if (!$replaced) {
-            if (filesize($temp_file)) {
-                $setting = PHP_EOL.$setting;
-            }
+            $setting = $setting.PHP_EOL;
 
             file_put_contents($temp_file, $setting, FILE_APPEND);
         }

@@ -2,6 +2,8 @@
 
 namespace Eco\EcoCli\Commands;
 
+use Eco\EcoCli\Concerns\DecryptsValues;
+use Eco\EcoCli\Concerns\EncryptsValues;
 use Eco\EcoCli\Helpers;
 use Github\HttpClient\Message\ResponseMediator;
 use Illuminate\Support\Arr;
@@ -9,6 +11,9 @@ use Symfony\Component\Console\Input\InputOption;
 
 class EnvPushCommand extends Command
 {
+    use EncryptsValues;
+    use DecryptsValues;
+
     public $eco_file = '.eco';
 
     protected array $public_key;
@@ -75,7 +80,7 @@ class EnvPushCommand extends Command
             $values = base64_decode($content->values, true);
             $nonce = base64_decode($content->nonce, true);
 
-            $decrypted = json_decode($this->decrypt($values, $nonce), true);
+            $decrypted = json_decode(self::decrypt($this->public_key['key'], $values, $nonce), true);
 
             $this->values = $decrypted;
 
@@ -94,7 +99,7 @@ class EnvPushCommand extends Command
         $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
 
         $payload = json_encode([
-            'values' => base64_encode($this->encrypt(json_encode($values), $nonce)),
+            'values' => base64_encode(self::encrypt($this->public_key['key'], json_encode($values), $nonce)),
             'nonce' => base64_encode($nonce),
         ]);
 
@@ -113,19 +118,5 @@ class EnvPushCommand extends Command
         } catch (\Exception $exception) {
             Helpers::danger('There was an issue updating the .eco file.');
         }
-    }
-
-    protected function encrypt($value, $nonce)
-    {
-        $decoded_key = base64_decode($this->public_key['key'], true);
-
-        return sodium_crypto_secretbox($value, $nonce, $decoded_key);
-    }
-
-    protected function decrypt($cipher_text, $nonce)
-    {
-        $decoded_key = base64_decode($this->public_key['key'], true);
-
-        return sodium_crypto_secretbox_open($cipher_text, $nonce, $decoded_key);
     }
 }

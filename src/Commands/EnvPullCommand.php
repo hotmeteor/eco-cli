@@ -2,11 +2,19 @@
 
 namespace Eco\EcoCli\Commands;
 
+use Eco\EcoCli\Concerns\DecryptsValues;
 use Eco\EcoCli\Helpers;
+use Github\HttpClient\Message\ResponseMediator;
 
 class EnvPullCommand extends Command
 {
+    use DecryptsValues;
+
     protected $file = '.env';
+
+    protected $example_file = '.env.example';
+
+    protected $eco_file = '.eco';
 
     protected function configure()
     {
@@ -21,32 +29,66 @@ class EnvPullCommand extends Command
         if (Helpers::confirm('Are you sure you want a sync your .env?', false)) {
             $this->authenticate();
 
-            $this->setupFile();
+            $org = Helpers::config('org');
+            $repo = Helpers::config('repo');
 
-            $this->setLocalValues();
+            $this->setupFile($org, $repo);
+
+            $this->assignLocalValues($org, $repo);
+
+            $this->assignRemoteValues($org, $repo);
 
             Helpers::line("<info>Your {$this->file} file has been synced.</info>");
         }
     }
 
-    protected function setupFile()
+    protected function setupFile($org, $repo)
     {
-        $response = $this->github->api('repo')->contents()->show(
-            Helpers::config('org'), Helpers::config('repo'), '.env.example'
-        );
+        $contents = '';
 
-        if (!$response) {
-            Helpers::abort('Unable to find .env.example file in repo.');
+        try {
+            $response = $this->github->api('repo')->contents()->show(
+                $org, $repo, $this->example_file,
+            );
+            $contents = base64_decode($response['content'], true);
+        } catch (\Exception $exception) {
         }
 
-        file_put_contents($this->file, base64_decode($response['content'], true));
+        file_put_contents($this->file, $contents, true);
     }
 
-    protected function setLocalValues()
+    protected function assignLocalValues($org, $repo)
     {
-        $repo = Helpers::config('repo');
+        $data = Helpers::config("local.{$repo}") ?? [];
 
-        foreach (Helpers::config("local.{$repo}") as $key => $value) {
+        $this->assignValues($data);
+    }
+
+    protected function assignRemoteValues($org, $repo)
+    {
+        $response = $this->github->getHttpClient()->get("/repos/{$org}/{$repo}/actions/secrets/public-key");
+
+        $content = ResponseMediator::getContent($response);
+
+        $public_key = $content['key'];
+
+        $response = $this->github->api('repositories')->contents()->show(
+            $org, $repo, $this->eco_file
+        );
+
+        $content = json_decode(base64_decode($response['content'], true));
+
+        $values = base64_decode($content->values, true);
+        $nonce = base64_decode($content->nonce, true);
+
+        $decrypted = json_decode(self::decrypt($public_key, $values, $nonce), true);
+
+        $this->assignValues($decrypted);
+    }
+
+    protected function assignValues(array $data)
+    {
+        foreach ($data as $key => $value) {
             $this->setLine($this->file, $key, $value);
         }
     }
