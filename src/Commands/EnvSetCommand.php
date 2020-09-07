@@ -15,7 +15,6 @@ class EnvSetCommand extends Command
             ->setAliases(['set'])
             ->addOption('key', null, InputOption::VALUE_OPTIONAL, 'The key of the value to set')
             ->addOption('push', 'P', InputOption::VALUE_OPTIONAL, 'If the value should also be pushed')
-            ->addOption('hidden', 'H', InputOption::VALUE_OPTIONAL, 'If the value should be encrypted')
             ->setDescription('Store a local variable that syncs with remote .env.');
     }
 

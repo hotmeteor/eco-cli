@@ -5,9 +5,12 @@ namespace Eco\EcoCli\Commands;
 use Eco\EcoCli\Config;
 use Eco\EcoCli\Helpers;
 use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Arr;
 
 class InitCommand extends Command
 {
+    protected $current_user;
+
     /**
      * Configure the command options.
      *
@@ -33,6 +36,8 @@ class InitCommand extends Command
             return $this->displayFailureMessage($e->getResponse());
         }
 
+        $this->current_user = $this->github->currentUser()->show();
+
         $this->ensureCurrentOrgIsSet();
         $this->ensureCurrentRepoIsSet();
 
@@ -46,6 +51,10 @@ class InitCommand extends Command
      */
     protected function attemptLogin()
     {
+        Helpers::info('----');
+        Helpers::info('To start, you will need a Github Personal Access token.');
+        Helpers::comment('https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token');
+
         $token = Helpers::secret('Github Token');
 
         $this->github->authenticate(
@@ -68,21 +77,27 @@ class InitCommand extends Command
     {
         $organizations = $this->github->currentUser()->organizations();
 
+        $all_organizations = collect($organizations)->sortBy->login->prepend(
+            Arr::only($this->current_user, ['id', 'login'])
+        );
+
         $org_id = $this->menu(
             'Which organization should be used?',
-            collect($organizations)->sortBy->login->mapWithKeys(function ($org) {
+            $all_organizations->mapWithKeys(function ($org) {
                 return [$org['id'] => $org['login']];
             })->all()
         );
 
-        Config::set('org', collect($organizations)->firstWhere('id', $org_id)['login']);
+        Config::set('org', $all_organizations->firstWhere('id', $org_id)['login']);
 
         Helpers::info('Organization set successfully.');
     }
 
     protected function ensureCurrentRepoIsSet()
     {
-        $repos = $this->github->api('organization')->repositories(Helpers::config('org'));
+        $repos = Helpers::config('org') === $this->current_user['login']
+            ? $this->github->currentUser()->setPerPage(100)->repositories()
+            : $this->github->api('organization')->repositories(Helpers::config('org'));
 
         $repo_id = $this->menu(
             'Which repository should be used? You can always switch this later.',
