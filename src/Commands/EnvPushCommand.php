@@ -96,7 +96,6 @@ class EnvPushCommand extends Command
         $payload = json_encode([
             'values' => base64_encode($this->encrypt(json_encode($values), $nonce)),
             'nonce' => base64_encode($nonce),
-            'key_id' => $this->public_key['key_id'],
         ]);
 
         try {
