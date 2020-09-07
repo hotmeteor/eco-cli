@@ -1,0 +1,88 @@
+#!/usr/bin/env php
+<?php
+
+use Dotenv\Dotenv;
+use Dotenv\Environment\Adapter\EnvConstAdapter as V3EnvConstAdapter;
+use Dotenv\Environment\Adapter\ServerConstAdapter as V3ServerConstAdapter;
+use Dotenv\Environment\DotenvFactory;
+use Dotenv\Repository\Adapter\EnvConstAdapter as V4orV5EnvConstAdapter;
+use Dotenv\Repository\Adapter\ServerConstAdapter as V4orV5ServerConstAdapter;
+use Dotenv\Repository\RepositoryBuilder;
+use Illuminate\Container\Container;
+use Symfony\Component\Console\Application;
+
+/*
+ * Require the autoloader.
+ */
+if (file_exists(__DIR__.'/../../autoload.php')) {
+    require __DIR__.'/../../autoload.php';
+} else {
+    require __DIR__.'/vendor/autoload.php';
+}
+
+/**
+ * Load the environment variables.
+ */
+(function () {
+    if (class_exists(RepositoryBuilder::class)) {
+        $adapters = [
+            V4orV5EnvConstAdapter::class,
+            V4orV5ServerConstAdapter::class,
+        ];
+
+        if (method_exists(RepositoryBuilder::class, 'addReader')) { // V5
+            $repository = RepositoryBuilder::createWithNoAdapters();
+
+            foreach ($adapters as $adapter) {
+                $repository = $repository
+                    ->addReader($adapter)
+                    ->addWriter($adapter);
+            }
+        } else { // V4
+            $adapters = array_map(function ($adapterClass) {
+                return new $adapterClass();
+            }, $adapters);
+
+            $repository = RepositoryBuilder::create()
+                ->withReaders($adapters)
+                ->withWriters($adapters);
+        }
+
+        Dotenv::create(
+            $repository->immutable()->make(),
+            __DIR__
+        )->safeLoad();
+    } else { // V3
+        Dotenv::create(__DIR__, null, new DotenvFactory([
+            new V3EnvConstAdapter(), new V3ServerConstAdapter(),
+        ]))->safeLoad();
+    }
+})();
+
+/*
+ * Create the container instance.
+ */
+Container::setInstance($container = new Container());
+
+//require __DIR__.'/services.php';
+
+/**
+ * Start the console application.
+ */
+$app = new Application('Eco CLI', '1.0.0');
+
+// Authentication...
+$app->add(new \Eco\EcoCli\Commands\InitCommand());
+
+// Repos
+$app->add(new \Eco\EcoCli\Commands\RepoListCommand());
+$app->add(new \Eco\EcoCli\Commands\RepoSwitchCommand());
+$app->add(new \Eco\EcoCli\Commands\RepoCurrentCommand());
+
+// Envs
+$app->add(new \Eco\EcoCli\Commands\EnvRefreshCommand());
+$app->add(new \Eco\EcoCli\Commands\EnvSetCommand());
+$app->add(new \Eco\EcoCli\Commands\EnvPullCommand());
+$app->add(new \Eco\EcoCli\Commands\EnvPushCommand());
+
+$app->run();

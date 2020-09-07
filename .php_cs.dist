@@ -1,0 +1,23 @@
+<?php
+
+// Reference: http://cs.sensiolabs.org/
+// Usage: php-cs-fixer fix app
+
+return PhpCsFixer\Config::create()
+    ->setRiskyAllowed(true)
+    ->setRules([
+        '@PSR2' => true,
+        '@Symfony' => true,
+        '@PHP70Migration' => true,
+        '@PHP71Migration' => true,
+        'no_multiline_whitespace_before_semicolons' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'simplified_null_return' => false,
+        'strict_comparison' => true,
+        'strict_param' => true,
+        'yoda_style' => false,
+        'ordered_imports' => true,
+        'phpdoc_add_missing_param_annotation' => false,
+        'phpdoc_separation' => false,
+        'phpdoc_align' => ['align' => 'left'],
+    ]);
