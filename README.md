@@ -48,7 +48,7 @@ You will be asked to select the owner or organization to act under, as well as t
 
 ### Usage
 
-Eco comes with a number of commands to manage local and remote environment variables.
+#### Eco comes with a number of commands to manage local and remote environment variables.
 
 ```sh
 $ eco init
