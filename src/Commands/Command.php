@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Command extends SymfonyCommand
 {
-    public Client $github;
+    public $github;
 
     public $input;
 
