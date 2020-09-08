@@ -108,3 +108,7 @@ Fetch a key:value pair from the remote `.eco` file and add or update it in your 
 ## Contributing
 
 If you're interested in contributing to Eco, please read our [contributing guide](https://github.com/hotmeteor/eco-cli/blob/master/.github/CONTRIBUTING.md).
+
+#### Acknowledgments
+
+Big thanks to the work done on the [Vapor CLI](https://github.com/laravel/vapor-cli), which provided some foundational code for this CLI.
