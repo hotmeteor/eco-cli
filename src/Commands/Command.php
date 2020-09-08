@@ -192,7 +192,7 @@ class Command extends SymfonyCommand
         );
     }
 
-    public function setLine($file, $key, $value)
+    protected function setLine($file, $key, $value)
     {
         if (!file_exists($file)) {
             file_put_contents($file, null);
@@ -229,6 +229,41 @@ class Command extends SymfonyCommand
         }
 
         rename($temp_file, $file);
+    }
+
+    protected function unsetLine($file, $key)
+    {
+        if (!file_exists($file)) {
+            return;
+        }
+
+        $key = strtoupper(trim($key));
+
+        $temp_file = "{$file}.tmp";
+
+        $reading = fopen($file, 'r');
+        $writing = fopen($temp_file, 'w');
+
+        $replaced = false;
+
+        while (!feof($reading)) {
+            $line = fgets($reading);
+            if (substr($line, 0, strlen($key)) === $key) {
+                $line = '';
+                $replaced = true;
+            }
+
+            fputs($writing, $line);
+        }
+
+        fclose($reading);
+        fclose($writing);
+
+        if (!$replaced) {
+            unlink($temp_file);
+        } else {
+            rename($temp_file, $file);
+        }
     }
 
     protected function buildSetting($key, $value)

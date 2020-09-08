@@ -5,15 +5,15 @@ namespace Eco\EcoCli\Commands;
 use Eco\EcoCli\Helpers;
 use Symfony\Component\Console\Input\InputOption;
 
-class EnvSetCommand extends Command
+class EnvUnsetCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('env:set')
-            ->setAliases(['set'])
-            ->addOption('key', null, InputOption::VALUE_OPTIONAL, 'The key of the value to set')
-            ->setDescription('Set and store a local variable');
+            ->setName('env:unset')
+            ->setAliases(['unset'])
+            ->addOption('key', null, InputOption::VALUE_OPTIONAL, 'The key of the value to unset')
+            ->setDescription('Unset and delete a local variable');
     }
 
     public function handle()
@@ -29,8 +29,8 @@ class EnvSetCommand extends Command
 
         Helpers::config("local.{$repo}.{$key}", trim($value));
 
-        $this->setLine('.env', $key, $value);
+        $this->unsetLine('.env', $key);
 
-        Helpers::line('<info>The</info> <comment>'.$key.'</comment> <info>value has been stored and added to your .env file.</info>');
+        Helpers::line('<info>The</info> <comment>'.$key.'</comment> <info>value has been deleted and removed from your .env file.</info>');
     }
 }

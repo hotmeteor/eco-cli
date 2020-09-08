@@ -80,8 +80,9 @@ $app->add(new \Eco\EcoCli\Commands\RepoSwitchCommand());
 $app->add(new \Eco\EcoCli\Commands\RepoCurrentCommand());
 
 // Envs
-$app->add(new \Eco\EcoCli\Commands\EnvRefreshCommand());
+$app->add(new \Eco\EcoCli\Commands\EnvFreshCommand());
 $app->add(new \Eco\EcoCli\Commands\EnvSetCommand());
+$app->add(new \Eco\EcoCli\Commands\EnvUnsetCommand());
 $app->add(new \Eco\EcoCli\Commands\EnvPullCommand());
 $app->add(new \Eco\EcoCli\Commands\EnvPushCommand());
 

@@ -4,12 +4,12 @@ namespace Eco\EcoCli\Commands;
 
 use Eco\EcoCli\Helpers;
 
-class EnvRefreshCommand extends Command
+class EnvFreshCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('env:refresh')
+            ->setName('env:fresh')
             ->setAliases(['cascade'])
             ->setDescription('Get a fresh .env file based on .env.example');
     }
