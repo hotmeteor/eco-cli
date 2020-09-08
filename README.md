@@ -50,39 +50,58 @@ You will be asked to select the owner or organization to act under, as well as t
 
 Eco comes with a number of commands to manage local and remote environment variables.
 
-#### `eco init`
+```sh
+$ eco init
+```
 
 Should be the first thing you run after installing. As seen above, it requires a Github PAT.
 
-#### `eco repo:list`
+```sh
+$ eco repo:list
+```
 
 List available repositories in your organization.
 
-#### `eco repo:switch`
+```sh
+$ eco repo:switch
+```
 
 List available repositories in your organization and allow you switch to a different repo. This allows you to use Eco across different repositories. Just don't forget to switch repos before pushing or pulling!
 
-#### `eco repo:current`
+```sh
+$ eco repo:current
+```
 
 Show the current working repository.
 
-#### `eco env:fresh`
+```sh
+$ eco env:fresh
+```
 
 Fetch the `.env.example` file from your project repository and copy it as your new local `.env` file. This is a desctructive command, so you are asked to confirm.
 
-#### `eco env:set`
+```sh
+$ eco env:set
+```
 
 Create or update a key:value pair in your local vault and will add it to your local `.env` file.
 
-#### `eco env:unset`
+```sh
+$ eco env:unset
+```
 
 Remove a key:value pair from your local vault and will remove it from your local `.env` file.
 
-#### `eco env:push`
+```sh
+$ eco env:push
+```
 
 Push a key:value pair into the remote `.eco` file.
 
-#### `eco env:pull`
+
+```sh
+$ eco env:pull
+```
 
 Fetch a key:value pair from the remote `.eco` file and add or update it in your local `.env` file.
 
