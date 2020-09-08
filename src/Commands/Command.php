@@ -200,7 +200,7 @@ class Command extends SymfonyCommand
 
         $key = strtoupper(trim($key));
 
-        $setting = $this->buildSetting($key, $value);
+        $setting = $this->buildSetting($key, $value).PHP_EOL;
 
         $temp_file = "{$file}.tmp";
 
@@ -223,8 +223,6 @@ class Command extends SymfonyCommand
         fclose($writing);
 
         if (!$replaced) {
-            $setting = $setting.PHP_EOL;
-
             file_put_contents($temp_file, $setting, FILE_APPEND);
         }
 
