@@ -7,18 +7,16 @@ use Eco\EcoCli\Concerns\EncryptsValues;
 use Eco\EcoCli\Helpers;
 use Github\HttpClient\Message\ResponseMediator;
 use Illuminate\Support\Arr;
-use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
 
 class EnvPushCommand extends Command
 {
     use EncryptsValues;
     use DecryptsValues;
 
-    public $eco_file = '.eco';
+    protected $public_key;
 
-    protected array $public_key;
-
-    protected array $values;
+    protected $values;
 
     protected $sha;
 
@@ -27,7 +25,7 @@ class EnvPushCommand extends Command
         $this
             ->setName('env:push')
             ->setAliases(['push'])
-            ->addOption('key', null, InputOption::VALUE_OPTIONAL, 'The key of the value to push')
+            ->addArgument('key', InputArgument::OPTIONAL, 'The key of the value to push')
             ->setDescription('Push up .env values to remote repository.');
     }
 
@@ -38,8 +36,8 @@ class EnvPushCommand extends Command
         $owner = Helpers::config('org');
         $repo = Helpers::config('repo');
 
-        if (!empty($this->option('key'))) {
-            $key = $this->option('key');
+        if (!empty($this->argument('key'))) {
+            $key = $this->argument('key');
         } else {
             $key = strtoupper(trim(Helpers::ask('Key')));
         }

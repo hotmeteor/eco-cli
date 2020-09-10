@@ -23,6 +23,12 @@ class Command extends SymfonyCommand
 
     public $rowCount = 0;
 
+    protected $env_file = '.env';
+
+    protected $env_example_file = '.env.example';
+
+    protected $eco_file = '.eco';
+
     /**
      * Ensure that the user has authenticated with Eco.
      *
@@ -190,6 +196,23 @@ class Command extends SymfonyCommand
             new ArrayInput($arguments),
             Helpers::app('output')
         );
+    }
+
+    protected function findLine($file, $key)
+    {
+        if (!file_exists($file)) {
+            return false;
+        }
+
+        $lines = explode(PHP_EOL, file_get_contents($file));
+
+        foreach ($lines as $line) {
+            if (substr($line, 0, strlen($key)) === $key) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function setLine($file, $key, $value)

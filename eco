@@ -74,6 +74,10 @@ $app = new Application('Eco CLI', '1.0.0');
 // Authentication...
 $app->add(new \Eco\EcoCli\Commands\InitCommand());
 
+// Orgs
+$app->add(new \Eco\EcoCli\Commands\OrgCurrentCommand());
+$app->add(new \Eco\EcoCli\Commands\OrgSwitchCommand());
+
 // Repos
 $app->add(new \Eco\EcoCli\Commands\RepoListCommand());
 $app->add(new \Eco\EcoCli\Commands\RepoSwitchCommand());

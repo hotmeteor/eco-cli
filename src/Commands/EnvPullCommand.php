@@ -10,12 +10,6 @@ class EnvPullCommand extends Command
 {
     use DecryptsValues;
 
-    protected $file = '.env';
-
-    protected $example_file = '.env.example';
-
-    protected $eco_file = '.eco';
-
     protected function configure()
     {
         $this
@@ -26,70 +20,79 @@ class EnvPullCommand extends Command
 
     public function handle()
     {
-        if (Helpers::confirm('Are you sure you want a sync your .env?', false)) {
-            $this->authenticate();
+        Helpers::info('Syncing will use your local variables, but ask you about conflicting remote variables.');
 
-            $org = Helpers::config('org');
-            $repo = Helpers::config('repo');
+        $this->authenticate();
 
-            $this->setupFile($org, $repo);
+        $org = Helpers::config('org');
+        $repo = Helpers::config('repo');
 
-            $this->assignLocalValues($org, $repo);
+        $this->setupFile();
 
-            $this->assignRemoteValues($org, $repo);
+        $this->assignLocalValues($org, $repo);
 
-            Helpers::line("<info>Your {$this->file} file has been synced.</info>");
-        }
+        $this->assignRemoteValues($org, $repo);
+
+        Helpers::line("<info>Your {$this->env_file} file has been synced.</info>");
     }
 
-    protected function setupFile($org, $repo)
+    protected function setupFile()
     {
-        $contents = '';
-
-        try {
-            $response = $this->github->api('repo')->contents()->show(
-                $org, $repo, $this->example_file,
-            );
-            $contents = base64_decode($response['content'], true);
-        } catch (\Exception $exception) {
+        if (!file_exists($this->env_file)) {
+            file_put_contents($this->env_file, '', true);
         }
-
-        file_put_contents($this->file, $contents, true);
     }
 
     protected function assignLocalValues($org, $repo)
     {
         $data = Helpers::config("local.{$repo}") ?? [];
 
-        $this->assignValues($data);
+        foreach ($data as $key => $value) {
+            $this->setLine($this->env_file, $key, $value);
+        }
+
+        Helpers::comment('Local variables synced...');
     }
 
     protected function assignRemoteValues($org, $repo)
     {
+        try {
+            $eco_file = $this->github->api('repositories')->contents()->show(
+                $org, $repo, $this->eco_file
+            );
+        } catch (\Exception $exception) {
+            return;
+        }
+
         $response = $this->github->getHttpClient()->get("/repos/{$org}/{$repo}/actions/secrets/public-key");
 
         $content = ResponseMediator::getContent($response);
 
         $public_key = $content['key'];
 
-        $response = $this->github->api('repositories')->contents()->show(
-            $org, $repo, $this->eco_file
-        );
-
-        $content = json_decode(base64_decode($response['content'], true));
+        $content = json_decode(base64_decode($eco_file['content'], true));
 
         $values = base64_decode($content->values, true);
         $nonce = base64_decode($content->nonce, true);
 
-        $decrypted = json_decode(self::decrypt($public_key, $values, $nonce), true);
+        $data = json_decode(self::decrypt($public_key, $values, $nonce), true);
 
-        $this->assignValues($decrypted);
-    }
+        $synced = false;
 
-    protected function assignValues(array $data)
-    {
         foreach ($data as $key => $value) {
-            $this->setLine($this->file, $key, $value);
+            if ($this->findLine($this->env_file, $key)) {
+                if (Helpers::confirm("The {$key} variable already exists in your local .env. Do you want to overwrite it?")) {
+                    $this->setLine($this->env_file, $key, $value);
+                    $synced = true;
+                }
+            } else {
+                $this->setLine($this->env_file, $key, $value);
+                $synced = true;
+            }
+        }
+
+        if ($synced) {
+            Helpers::comment('Remote variables synced...');
         }
     }
 }
