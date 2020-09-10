@@ -46,15 +46,33 @@ $ eco init
 
 You will be asked to select the owner or organization to act under, as well as the repository for the current project.
 
-### Usage
+## Usage
 
-#### Eco comes with a number of commands to manage local and remote environment variables.
+Eco comes with a number of commands to manage local and remote environment variables.
+
+#### Setup
 
 ```sh
 $ eco init
 ```
-
 Should be the first thing you run after installing. As seen above, it requires a Github PAT.
+
+#### Organizations
+
+```sh
+$ eco org:switch
+```
+
+List available organizations you're a member of and allow you switch to a different one.
+
+```sh
+$ eco org:current
+```
+
+Show the current working organization.
+
+#### Repositories
+
 
 ```sh
 $ eco repo:list
@@ -73,6 +91,8 @@ $ eco repo:current
 ```
 
 Show the current working repository.
+
+#### Keys
 
 ```sh
 $ eco env:fresh
