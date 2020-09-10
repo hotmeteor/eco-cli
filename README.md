@@ -20,7 +20,7 @@ Eco is actually pretty simple. It operates using 3 different storage mechanisms:
 
 1. **Your project `.env` file.** This is where the values you're actually using live, because your project depends on them.
 2. **Your local "vault".** The vault is a local config file where you can permanently store any environment variable you don't want to lose. This gives you the ability to nuke your `.env` file and then just pull in the keys you want to restore.
-3. **The remote `.eco` file.** When you push keys you want shared by the team, Eco creates an `.eco` file in the root of your repo, directly in the `master` branch. Inside the `.eco` file are your shared keys, all encrypted using [the same strategy used by Github when store repository secrets](https://docs.github.com/en/rest/reference/actions#create-or-update-a-repository-secret). This file will store unique key:value pairs that your team pushes to it.
+3. **The remote `.eco` file.** When you push keys you want shared by the team, Eco creates an `.eco` file in the root of your repo, directly in the `master` branch. Inside the `.eco` file are your shared keys, all encrypted using [the same strategy used by Github when storing repository secrets](https://docs.github.com/en/rest/reference/actions#create-or-update-a-repository-secret). This file will store unique key:value pairs that your team pushes to it.
 
 ## Documentation
 
