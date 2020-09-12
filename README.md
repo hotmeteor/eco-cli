@@ -2,6 +2,8 @@
 
 Eco allows you and your team to effortlessly and securely share non-production environment variables, without the overhead of setting up dedicated secrets servers.
 
+[![Latest Stable Version](https://poser.pugx.org/hotmeteor/eco-cli/v)](//packagist.org/packages/hotmeteor/eco-cli)
+
 ### What's this for?
 
 Have you ever...
