@@ -31,7 +31,7 @@ class RepoSwitchCommand extends Command
     {
         $this->authenticate();
 
-        $repos = $this->github->currentUser()->repositories(Helpers::config('org'));
+        $repos = $this->host->currentUser()->repositories(Helpers::config('org'));
 
         $repo_id = null;
 

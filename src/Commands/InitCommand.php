@@ -36,7 +36,7 @@ class InitCommand extends Command
             return $this->displayFailureMessage($e->getResponse());
         }
 
-        $this->current_user = $this->github->currentUser()->show();
+        $this->current_user = $this->host->getCurrentUser();
 
         $this->ensureCurrentOrgIsSet();
         $this->ensureCurrentRepoIsSet();
@@ -55,13 +55,9 @@ class InitCommand extends Command
         Helpers::info('To start, you will need a Github Personal Access token.');
         Helpers::comment('https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token');
 
-        $token = Helpers::secret('Github Token');
+        Helpers::config('token', '');
 
-        $this->github->authenticate(
-            $token, null, \Github\Client::AUTH_ACCESS_TOKEN
-        );
-
-        Helpers::config(['token' => $token]);
+        $this->authenticate();
 
         Helpers::info('Authenticated successfully.'.PHP_EOL);
     }
@@ -75,7 +71,7 @@ class InitCommand extends Command
 
     protected function ensureCurrentOrgIsSet()
     {
-        $organizations = $this->github->currentUser()->organizations();
+        $organizations = $this->host->getOrganizations();
 
         $all_organizations = collect($organizations)->sortBy->login->prepend(
             Arr::only($this->current_user, ['id', 'login'])
@@ -96,8 +92,8 @@ class InitCommand extends Command
     protected function ensureCurrentRepoIsSet()
     {
         $repos = Helpers::config('org') === $this->current_user['login']
-            ? $this->github->currentUser()->setPerPage(100)->repositories()
-            : $this->github->api('organization')->repositories(Helpers::config('org'));
+            ? $this->host->getCurrentUserRepositories()
+            : $this->host->getOrganizationRepositories(Helpers::config('org'));
 
         $repo_id = $this->menu(
             'Which repository should be used? You can always switch this later.',

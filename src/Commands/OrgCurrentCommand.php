@@ -28,10 +28,10 @@ class OrgCurrentCommand extends Command
     {
         $this->authenticate();
 
-        $organizations = $this->github->currentUser()->organizations();
+        $organizations = $this->host->currentUser()->organizations();
 
         $all_organizations = collect($organizations)->sortBy->login->prepend(
-            Arr::only($this->github->currentUser()->show(), ['id', 'login'])
+            Arr::only($this->host->currentUser()->show(), ['id', 'login'])
         );
 
         $org = $all_organizations->firstWhere('login', Helpers::config('org'));

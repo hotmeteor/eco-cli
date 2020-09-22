@@ -4,7 +4,6 @@ namespace Eco\EcoCli\Commands;
 
 use Eco\EcoCli\Concerns\DecryptsValues;
 use Eco\EcoCli\Helpers;
-use Github\HttpClient\Message\ResponseMediator;
 
 class EnvPullCommand extends Command
 {
@@ -57,18 +56,14 @@ class EnvPullCommand extends Command
     protected function assignRemoteValues($org, $repo)
     {
         try {
-            $eco_file = $this->github->api('repositories')->contents()->show(
+            $eco_file = $this->host->getRemoteFile(
                 $org, $repo, $this->eco_file
             );
         } catch (\Exception $exception) {
             return;
         }
 
-        $response = $this->github->getHttpClient()->get("/repos/{$org}/{$repo}/actions/secrets/public-key");
-
-        $content = ResponseMediator::getContent($response);
-
-        $public_key = $content['key'];
+        $public_key = $this->host->getPublicKey();
 
         $content = json_decode(base64_decode($eco_file['content'], true));
 

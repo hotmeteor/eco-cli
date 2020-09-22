@@ -5,7 +5,6 @@ namespace Eco\EcoCli\Commands;
 use Eco\EcoCli\Concerns\DecryptsValues;
 use Eco\EcoCli\Concerns\EncryptsValues;
 use Eco\EcoCli\Helpers;
-use Github\HttpClient\Message\ResponseMediator;
 use Illuminate\Support\Arr;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -57,17 +56,13 @@ class EnvPushCommand extends Command
 
     protected function setPublicKey($owner, $repo)
     {
-        $response = $this->github->getHttpClient()->get("/repos/{$owner}/{$repo}/actions/secrets/public-key");
-
-        $content = ResponseMediator::getContent($response);
-
-        $this->public_key = $content;
+        $this->public_key = $this->host->getPublicKey($owner, $repo);
     }
 
     protected function getCurrentContents($owner, $repo, $key)
     {
         try {
-            $response = $this->github->api('repositories')->contents()->show(
+            $response = $this->host->getRemoteFile(
                 $owner, $repo, $this->eco_file
             );
 
@@ -103,11 +98,11 @@ class EnvPushCommand extends Command
 
         try {
             if ($this->sha) {
-                $this->github->api('repositories')->contents()->update(
+                $this->host->api('repositories')->contents()->update(
                     $owner, $repo, $this->eco_file, $payload, 'Update .eco values', $this->sha
                 );
             } else {
-                $this->github->api('repositories')->contents()->create(
+                $this->host->api('repositories')->contents()->create(
                     $owner, $repo, $this->eco_file, $payload, 'Create initial .eco file'
                 );
             }

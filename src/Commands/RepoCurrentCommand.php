@@ -28,7 +28,7 @@ class RepoCurrentCommand extends Command
     {
         $this->authenticate();
 
-        $repo = $this->github->repository()->show(
+        $repo = $this->host->repository()->show(
             Helpers::config('org'), Helpers::config('repo')
         );
 

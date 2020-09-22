@@ -19,7 +19,7 @@ class EnvFreshCommand extends Command
         if (Helpers::confirm('Are you sure you want a fresh .env? This will overwrite your existing .env file.', false)) {
             $this->authenticate();
 
-            $response = $this->github->api('repo')->contents()->show(
+            $response = $this->host->getRemoteFile(
                 Helpers::config('org'), Helpers::config('repo'), '.env.example'
             );
 

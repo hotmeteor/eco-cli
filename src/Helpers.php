@@ -2,8 +2,6 @@
 
 namespace Eco\EcoCli;
 
-use Exception;
-use Github\Client;
 use Illuminate\Container\Container;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -33,7 +31,7 @@ class Helpers
      *
      * @return mixed
      */
-    public static function app($name = null)
+    public static function app($name = null): Container
     {
         return $name ? Container::getInstance()->make($name) : Container::getInstance();
     }

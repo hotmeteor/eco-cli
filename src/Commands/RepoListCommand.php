@@ -23,7 +23,7 @@ class RepoListCommand extends Command
     {
         $this->authenticate();
 
-        $repos = $this->github->currentUser()->repositories(Helpers::config('org'));
+        $repos = $this->host->currentUser()->repositories(Helpers::config('org'));
 
         $repos = collect($repos)->sortBy(function ($repo) {
             return $repo['name'];

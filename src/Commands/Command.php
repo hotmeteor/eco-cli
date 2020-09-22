@@ -4,8 +4,13 @@ namespace Eco\EcoCli\Commands;
 
 use DateTime;
 use Eco\EcoCli\Helpers;
+use Eco\EcoCli\Hosts\BitbucketDriver;
+use Eco\EcoCli\Hosts\GithubDriver;
+use Eco\EcoCli\Hosts\GitlabDriver;
+use Eco\EcoCli\Hosts\HostManager;
 use Eco\Env;
 use Github\Client;
+use Illuminate\Container\Container;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -14,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Command extends SymfonyCommand
 {
-    public $github;
+    public $host;
 
     public $input;
 
@@ -37,34 +42,24 @@ class Command extends SymfonyCommand
      */
     public function authenticate()
     {
-        if (isset($_ENV['GITHUB_API_TOKEN']) ||
-            getenv('GITHUB_API_TOKEN')) {
-            return;
-        }
+        $token = Helpers::config('token') ?? Helpers::secret('Github Token');
 
-        try {
-            $token = Helpers::config('token') ?? Helpers::secret('Github Token');
+        $this->host->authenticate($token);
 
-            $this->github->authenticate(
-                $token, null, \Github\Client::AUTH_ACCESS_TOKEN
-            );
-
-            Helpers::config(['token' => $token]);
-        } catch (\Exception $exception) {
-            throw new \Exception("Please authenticate using the 'install' command before proceeding.");
-        }
+        Helpers::config(['token' => $token]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->startedAt = new DateTime();
 
-        $this->github = Helpers::app(Client::class);
+        $this->host = Helpers::app(Client::class);
 
         Helpers::app()->instance('input', $this->input = $input);
         Helpers::app()->instance('output', $this->output = $output);
 
         $this->configureOutputStyles($output);
+        $this->configureHost(Helpers::app());
 
         return Helpers::app()->call([$this, 'handle']) ?: 0;
     }
@@ -80,6 +75,29 @@ class Command extends SymfonyCommand
             'finished',
             new OutputFormatterStyle('green', 'default', ['bold'])
         );
+    }
+
+    protected function configureHost(Container $app)
+    {
+        $app->singleton('host', function ($app) {
+            return new HostManager($app);
+        });
+
+        $host = app('host');
+
+        $host->extend('github', function ($app) {
+            return new GithubDriver($app);
+        });
+
+        $host->extend('gitlab', function ($app) {
+            return new GitlabDriver($app);
+        });
+
+        $host->extend('bitbucket', function ($app) {
+            return new BitbucketDriver($app);
+        });
+
+        $this->host = $host;
     }
 
     /**
