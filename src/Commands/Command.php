@@ -4,6 +4,7 @@ namespace Eco\EcoCli\Commands;
 
 use DateTime;
 use Eco\EcoCli\Helpers;
+use Eco\Env;
 use Github\Client;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -200,99 +201,16 @@ class Command extends SymfonyCommand
 
     protected function findLine($file, $key)
     {
-        if (!file_exists($file)) {
-            return false;
-        }
-
-        $lines = explode(PHP_EOL, file_get_contents($file));
-
-        foreach ($lines as $line) {
-            if (substr($line, 0, strlen($key)) === $key) {
-                return true;
-            }
-        }
-
-        return false;
+        return Env::has($file, $key);
     }
 
     protected function setLine($file, $key, $value)
     {
-        if (!file_exists($file)) {
-            file_put_contents($file, null);
-        }
-
-        $key = strtoupper(trim($key));
-
-        $setting = $this->buildSetting($key, $value).PHP_EOL;
-
-        $temp_file = "{$file}.tmp";
-
-        $reading = fopen($file, 'r');
-        $writing = fopen($temp_file, 'w');
-
-        $replaced = false;
-
-        while (!feof($reading)) {
-            $line = fgets($reading);
-            if (substr($line, 0, strlen($key)) === $key) {
-                $line = $setting;
-                $replaced = true;
-            }
-
-            fputs($writing, $line);
-        }
-
-        fclose($reading);
-        fclose($writing);
-
-        if (!$replaced) {
-            file_put_contents($temp_file, $setting, FILE_APPEND);
-        }
-
-        rename($temp_file, $file);
+        Env::set($file, $key, $value);
     }
 
     protected function unsetLine($file, $key)
     {
-        if (!file_exists($file)) {
-            return;
-        }
-
-        $key = strtoupper(trim($key));
-
-        $temp_file = "{$file}.tmp";
-
-        $reading = fopen($file, 'r');
-        $writing = fopen($temp_file, 'w');
-
-        $replaced = false;
-
-        while (!feof($reading)) {
-            $line = fgets($reading);
-            if (substr($line, 0, strlen($key)) === $key) {
-                $line = '';
-                $replaced = true;
-            }
-
-            fputs($writing, $line);
-        }
-
-        fclose($reading);
-        fclose($writing);
-
-        if (!$replaced) {
-            unlink($temp_file);
-        } else {
-            rename($temp_file, $file);
-        }
-    }
-
-    protected function buildSetting($key, $value)
-    {
-        if (str_contains($value, ' ')) {
-            $value = "'".$value."'";
-        }
-
-        return trim($key).'='.trim($value);
+        Env::unset($file, $key);
     }
 }

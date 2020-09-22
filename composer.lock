@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0596b2e5e13d902169b709e33a31085d",
+    "content-hash": "8b345d29fcd9e5cae3cd8f4f19a53110",
     "packages": [
         {
             "name": "brick/math",
@@ -577,6 +577,46 @@
                 "url"
             ],
             "time": "2019-07-01T23:21:34+00:00"
+        },
+        {
+            "name": "hotmeteor/eco-env",
+            "version": "v1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hotmeteor/eco-env.git",
+                "reference": "3297423b4dcc83fd2b85c7ffd28b371544aba212"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hotmeteor/eco-env/zipball/3297423b4dcc83fd2b85c7ffd28b371544aba212",
+                "reference": "3297423b4dcc83fd2b85c7ffd28b371544aba212",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2",
+                "vlucas/phpdotenv": "^3.0|^4.0|^5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.0|^9.0"
+            },
+            "bin": [
+                "eco"
+            ],
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "Eco\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Adam Campbell",
+                    "email": "adam@hotmeteor.com"
+                }
+            ],
+            "description": ".env file writer",
+            "time": "2020-09-22T19:37:49+00:00"
         },
         {
             "name": "knplabs/github-api",

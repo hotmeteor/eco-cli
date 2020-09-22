@@ -13,6 +13,7 @@
   ],
   "require": {
     "php": "^7.2",
+    "hotmeteor/eco-env": "^1.0",
     "illuminate/container": "^6.0|^7.0|^8.0",
     "illuminate/filesystem": "^6.0|^7.0|^8.0",
     "illuminate/support": "^6.0|^7.0|^8.0",
