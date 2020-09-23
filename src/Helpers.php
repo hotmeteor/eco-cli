@@ -31,7 +31,7 @@ class Helpers
      *
      * @return mixed
      */
-    public static function app($name = null): Container
+    public static function app($name = null)
     {
         return $name ? Container::getInstance()->make($name) : Container::getInstance();
     }
