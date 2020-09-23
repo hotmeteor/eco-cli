@@ -9,7 +9,6 @@ use Eco\EcoCli\Hosts\GithubDriver;
 use Eco\EcoCli\Hosts\GitlabDriver;
 use Eco\EcoCli\Hosts\HostManager;
 use Eco\Env;
-use Github\Client;
 use Illuminate\Container\Container;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -52,8 +51,6 @@ class Command extends SymfonyCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->startedAt = new DateTime();
-
-        $this->host = Helpers::app(Client::class);
 
         Helpers::app()->instance('input', $this->input = $input);
         Helpers::app()->instance('output', $this->output = $output);
