@@ -7,14 +7,9 @@ use Eco\EcoCli\Models\File;
 
 class BitbucketDriver extends BaseDriver
 {
-    protected function initialize()
+    protected function client(): Client
     {
-        $this->driver = $this->app->make(Client::class);
-    }
-
-    protected function driver(): Client
-    {
-        return $this->driver;
+        return $this->client;
     }
 
     public function authenticate($token)
@@ -24,7 +19,7 @@ class BitbucketDriver extends BaseDriver
         }
 
         try {
-            $this->driver()->authenticate(
+            $this->client()->authenticate(
                 Client::AUTH_OAUTH_TOKEN, $token
             );
         } catch (\Exception $exception) {
@@ -34,27 +29,27 @@ class BitbucketDriver extends BaseDriver
 
     public function getCurrentUser()
     {
-        return $this->driver()->currentUser()->show();
+        return $this->client()->currentUser()->show();
     }
 
     public function getOrganizations()
     {
-        return $this->driver()->currentUser()->listWorkspaces();
+        return $this->client()->currentUser()->listWorkspaces();
     }
 
     public function getCurrentUserRepositories($per_page = 100)
     {
-        return $this->driver()->repositories()->list();
+        return $this->client()->repositories()->list();
     }
 
     public function getOwnerRepositories($owner, $per_page = 100)
     {
-        return $this->driver()->workspaces($owner)->projects()->list();
+        return $this->client()->workspaces($owner)->projects()->list();
     }
 
     public function getRepository($owner, $name)
     {
-        return $this->driver()->workspaces($owner)->projects()->show($name);
+        return $this->client()->workspaces($owner)->projects()->show($name);
     }
 
     public function getSecretKey($owner, $repository)

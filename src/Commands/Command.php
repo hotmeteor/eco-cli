@@ -4,9 +4,6 @@ namespace Eco\EcoCli\Commands;
 
 use DateTime;
 use Eco\EcoCli\Helpers;
-use Eco\EcoCli\Hosts\BitbucketDriver;
-use Eco\EcoCli\Hosts\GithubDriver;
-use Eco\EcoCli\Hosts\GitlabDriver;
 use Eco\EcoCli\Hosts\HostManager;
 use Eco\Env;
 use Illuminate\Container\Container;
@@ -76,25 +73,11 @@ class Command extends SymfonyCommand
 
     protected function configureHost(Container $app)
     {
-        $app->singleton('host', function ($app) {
+        $app->singleton(HostManager::class, function ($app) {
             return new HostManager($app);
         });
 
-        $host = app('host');
-
-        $host->extend('github', function ($app) {
-            return new GithubDriver($app);
-        });
-
-        $host->extend('gitlab', function ($app) {
-            return new GitlabDriver($app);
-        });
-
-        $host->extend('bitbucket', function ($app) {
-            return new BitbucketDriver($app);
-        });
-
-        $this->host = $host;
+        $this->host = $app->make(HostManager::class);
     }
 
     /**

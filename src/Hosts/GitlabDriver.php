@@ -8,14 +8,9 @@ use Gitlab\HttpClient\Message\ResponseMediator;
 
 class GitlabDriver extends BaseDriver
 {
-    protected function initialize()
+    protected function client(): Client
     {
-        $this->driver = $this->app->make(Client::class);
-    }
-
-    protected function driver(): Client
-    {
-        return $this->driver;
+        return $this->client;
     }
 
     public function authenticate($token)
@@ -27,7 +22,7 @@ class GitlabDriver extends BaseDriver
         try {
 //            $this->driver()->setUrl('https://git.yourdomain.com');
 
-            $this->driver()->authenticate(
+            $this->client()->authenticate(
                 $token, Client::AUTH_HTTP_TOKEN
             );
         } catch (\Exception $exception) {
@@ -37,17 +32,17 @@ class GitlabDriver extends BaseDriver
 
     public function getCurrentUser()
     {
-        return $this->driver()->users()->me();
+        return $this->client()->users()->me();
     }
 
     public function getOrganizations()
     {
-        return $this->driver()->groups();
+        return $this->client()->groups();
     }
 
     public function getCurrentUserRepositories($per_page = 100)
     {
-        return $this->driver()->projects()->all([
+        return $this->client()->projects()->all([
             'membership' => true,
             'owned' => true,
             'simple' => true,
@@ -56,7 +51,7 @@ class GitlabDriver extends BaseDriver
 
     public function getOwnerRepositories($owner, $per_page = 100)
     {
-        return $this->driver()->projects()->all([
+        return $this->client()->projects()->all([
             'membership' => true,
             'simple' => true,
         ]);
@@ -64,14 +59,14 @@ class GitlabDriver extends BaseDriver
 
     public function getRepository($owner, $name)
     {
-        return $this->driver()->projects()->show(urlencode($name));
+        return $this->client()->projects()->show(urlencode($name));
     }
 
     public function getSecretKey($owner, $repository)
     {
         $id = urlencode($repository);
 
-        $response = $this->driver()->getHttpClient()->get("/projects/{$id}/deploy_keys");
+        $response = $this->client()->getHttpClient()->get("/projects/{$id}/deploy_keys");
 
         $content = ResponseMediator::getContent($response);
 
@@ -86,7 +81,7 @@ class GitlabDriver extends BaseDriver
 
     public function getRemoteFile($owner, $repository, $filename): File
     {
-        $response = $this->driver()->repositoryFiles()->getFile(
+        $response = $this->client()->repositoryFiles()->getFile(
             $repository, $filename, 'master'
         );
 
@@ -98,7 +93,7 @@ class GitlabDriver extends BaseDriver
 
     public function createRemoteFile($owner, $repository, $file, $contents, $message)
     {
-        return $this->driver()->repositoryFiles()->createFile(
+        return $this->client()->repositoryFiles()->createFile(
             urlencode($repository), [
                 'branch' => 'master',
                 'file_path' => urlencode($file),
@@ -110,7 +105,7 @@ class GitlabDriver extends BaseDriver
 
     public function updateRemoteFile($owner, $repository, $file, $contents, $message, $sha = null)
     {
-        return $this->driver()->repositoryFiles()->updateFile(
+        return $this->client()->repositoryFiles()->updateFile(
             urlencode($repository), [
                 'branch' => 'master',
                 'file_path' => urlencode($file),

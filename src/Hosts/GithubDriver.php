@@ -8,14 +8,9 @@ use Github\HttpClient\Message\ResponseMediator;
 
 class GithubDriver extends BaseDriver
 {
-    protected function initialize()
+    protected function client(): Client
     {
-        $this->driver = $this->app->make(Client::class);
-    }
-
-    protected function driver(): Client
-    {
-        return $this->driver;
+        return $this->client;
     }
 
     public function authenticate($token)
@@ -25,7 +20,7 @@ class GithubDriver extends BaseDriver
         }
 
         try {
-            $this->driver()->authenticate(
+            $this->client()->authenticate(
                 $token, null, Client::AUTH_ACCESS_TOKEN
             );
         } catch (\Exception $exception) {
@@ -35,33 +30,33 @@ class GithubDriver extends BaseDriver
 
     public function getCurrentUser()
     {
-        return $this->driver()->currentUser()->show();
+        return $this->client()->currentUser()->show();
     }
 
     public function getOrganizations()
     {
-        return $this->driver()->currentUser()->organizations();
+        return $this->client()->currentUser()->organizations();
     }
 
     public function getOwnerRepositories($owner, $per_page = 100)
     {
-        return $this->driver()->api('organization')->setPerPage($per_page)->repositories($owner);
+        return $this->client()->api('organization')->setPerPage($per_page)->repositories($owner);
 //        return $this->driver()->api('organization')->repositories($owner);
     }
 
     public function getCurrentUserRepositories($per_page = 100)
     {
-        return $this->driver()->currentUser()->setPerPage($per_page)->repositories();
+        return $this->client()->currentUser()->setPerPage($per_page)->repositories();
     }
 
     public function getRepository($owner, $name)
     {
-        return $this->driver()->repository()->show($owner, $name);
+        return $this->client()->repository()->show($owner, $name);
     }
 
     public function getSecretKey($owner, $repository)
     {
-        $response = $this->driver()->getHttpClient()->get("/repos/{$owner}/{$repository}/actions/secrets/public-key");
+        $response = $this->client()->getHttpClient()->get("/repos/{$owner}/{$repository}/actions/secrets/public-key");
 
         $content = ResponseMediator::getContent($response);
 
@@ -70,7 +65,7 @@ class GithubDriver extends BaseDriver
 
     public function getRemoteFile($owner, $repository, $filename): File
     {
-        $response = $this->driver()->api('repositories')->contents()->show(
+        $response = $this->client()->api('repositories')->contents()->show(
             $owner, $repository, $filename
         );
 
@@ -82,14 +77,14 @@ class GithubDriver extends BaseDriver
 
     public function createRemoteFile($owner, $repository, $file, $contents, $message)
     {
-        return $this->driver()->api('repositories')->contents()->create(
+        return $this->client()->api('repositories')->contents()->create(
             $owner, $repository, $file, $contents, $message
         );
     }
 
     public function updateRemoteFile($owner, $repository, $file, $contents, $message, $sha = null)
     {
-        return $this->driver()->api('repositories')->contents()->update(
+        return $this->client()->api('repositories')->contents()->update(
             $owner, $repository, $file, $contents, $message, $sha
         );
     }
