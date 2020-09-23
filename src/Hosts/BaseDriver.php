@@ -23,4 +23,6 @@ abstract class BaseDriver implements DriverContract, SecurityContract
     }
 
     abstract protected function initialize();
+
+    abstract protected function driver();
 }

@@ -57,15 +57,15 @@ class EnvPushCommand extends Command
     protected function keyExists($owner, $repo, $key): bool
     {
         try {
-            $response = $this->host->getRemoteFile(
+            $file = $this->host->getRemoteFile(
                 $owner, $repo, $this->eco_file
             );
 
             $decrypted = $this->host->decryptContents(
-                $response['content'], $this->public_key['key']
+                $file->contents, $this->public_key['key']
             );
 
-            $this->sha = $response['sha'];
+            $this->sha = $file->hash;
             $this->values = $decrypted;
 
             return array_key_exists($key, $decrypted);

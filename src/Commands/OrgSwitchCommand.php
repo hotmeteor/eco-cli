@@ -32,7 +32,7 @@ class OrgSwitchCommand extends Command
         $organizations = $this->host->getOrganizations();
 
         $all_organizations = collect($organizations)->sortBy->login->prepend(
-            Arr::only($this->host->currentUser()->show(), ['id', 'login'])
+            Arr::only($this->host->getCurrentUser(), ['id', 'login'])
         );
 
         $org_id = $this->menu(

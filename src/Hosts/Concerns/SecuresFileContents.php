@@ -9,7 +9,7 @@ trait SecuresFileContents
 
     public function decryptContents($contents, $public_key): array
     {
-        $data = json_decode(base64_decode($contents, true));
+        $data = json_decode($contents);
 
         $values = base64_decode($data->values, true);
         $nonce = base64_decode($data->nonce, true);

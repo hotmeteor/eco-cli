@@ -2,6 +2,7 @@
 
 namespace Eco\EcoCli\Hosts;
 
+use Eco\EcoCli\Models\File;
 use Github\Client;
 use Github\HttpClient\Message\ResponseMediator;
 
@@ -12,6 +13,11 @@ class GithubDriver extends BaseDriver
         $this->driver = $this->app->make(Client::class);
     }
 
+    protected function driver(): Client
+    {
+        return $this->driver;
+    }
+
     public function authenticate($token)
     {
         if (isset($_ENV['GITHUB_API_TOKEN']) || getenv('GITHUB_API_TOKEN')) {
@@ -19,7 +25,7 @@ class GithubDriver extends BaseDriver
         }
 
         try {
-            $this->driver->authenticate(
+            $this->driver()->authenticate(
                 $token, null, Client::AUTH_ACCESS_TOKEN
             );
         } catch (\Exception $exception) {
@@ -29,70 +35,62 @@ class GithubDriver extends BaseDriver
 
     public function getCurrentUser()
     {
-        return $this->driver->currentUser()->show();
+        return $this->driver()->currentUser()->show();
     }
 
     public function getOrganizations()
     {
-        return $this->driver->currentUser()->organizations();
+        return $this->driver()->currentUser()->organizations();
     }
 
     public function getOwnerRepositories($owner, $per_page = 100)
     {
-        return $this->driver->currentUser()->repositories($owner)->setPerPage($per_page);
-//        return $this->driver->api('organization')->repositories($owner);
+        return $this->driver()->api('organization')->setPerPage($per_page)->repositories($owner);
+//        return $this->driver()->api('organization')->repositories($owner);
     }
 
     public function getCurrentUserRepositories($per_page = 100)
     {
-        return $this->driver->currentUser()->setPerPage($per_page)->repositories();
+        return $this->driver()->currentUser()->setPerPage($per_page)->repositories();
     }
 
     public function getRepository($owner, $name)
     {
-        return $this->driver->repository()->show($owner, $name);
+        return $this->driver()->repository()->show($owner, $name);
     }
 
     public function getSecretKey($owner, $repository)
     {
-        $response = $this->driver->getHttpClient()->get("/repos/{$owner}/{$repository}/actions/secrets/public-key");
+        $response = $this->driver()->getHttpClient()->get("/repos/{$owner}/{$repository}/actions/secrets/public-key");
 
         $content = ResponseMediator::getContent($response);
 
         return $content['key'];
     }
 
-    public function getRemoteFile($owner, $repository, $filename)
+    public function getRemoteFile($owner, $repository, $filename): File
     {
-        return $this->driver->api('repositories')->contents()->show(
+        $response = $this->driver()->api('repositories')->contents()->show(
             $owner, $repository, $filename
+        );
+
+        return new File(
+            base64_decode($response['content'], true),
+            $response['sha']
         );
     }
 
     public function createRemoteFile($owner, $repository, $file, $contents, $message)
     {
-        return $this->driver->api('repositories')->contents()->create(
+        return $this->driver()->api('repositories')->contents()->create(
             $owner, $repository, $file, $contents, $message
         );
     }
 
     public function updateRemoteFile($owner, $repository, $file, $contents, $message, $sha = null)
     {
-        return $this->driver->api('repositories')->contents()->update(
+        return $this->driver()->api('repositories')->contents()->update(
             $owner, $repository, $file, $contents, $message, $sha
-        );
-    }
-
-    public function upsertRemoteFile($owner, $repository, $file, $contents, $message, $sha = null)
-    {
-        if ($this->driver->exists($owner, $repository, $file)) {
-            return $this->updateRemoteFile(
-                $owner, $repository, $file, $contents, $message, $sha
-            );
-        }
-
-        return $this->createRemoteFile(
-            $owner, $repository, $file, $contents, $message
         );
     }
 }

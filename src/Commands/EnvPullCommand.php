@@ -2,8 +2,8 @@
 
 namespace Eco\EcoCli\Commands;
 
-use Eco\EcoCli\Hosts\Concerns\DecryptsValues;
 use Eco\EcoCli\Helpers;
+use Eco\EcoCli\Hosts\Concerns\DecryptsValues;
 
 class EnvPullCommand extends Command
 {
@@ -53,24 +53,15 @@ class EnvPullCommand extends Command
         Helpers::comment('Local variables synced...');
     }
 
-    protected function assignRemoteValues($org, $repo)
+    protected function assignRemoteValues($owner, $repo)
     {
-        try {
-            $eco_file = $this->host->getRemoteFile(
-                $org, $repo, $this->eco_file
-            );
-        } catch (\Exception $exception) {
-            return;
-        }
+        $file = $this->host->getRemoteFile(
+            $owner, $repo, $this->eco_file
+        );
 
-        $public_key = $this->host->getPublicKey();
-
-        $content = json_decode(base64_decode($eco_file['content'], true));
-
-        $values = base64_decode($content->values, true);
-        $nonce = base64_decode($content->nonce, true);
-
-        $data = json_decode(self::decrypt($public_key, $values, $nonce), true);
+        $data = $this->host->decryptContents(
+            $file->contents, $this->host->getPublicKey()
+        );
 
         $synced = false;
 
