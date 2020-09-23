@@ -28,11 +28,7 @@ class RepoCurrentCommand extends Command
     {
         $this->authenticate();
 
-        $repo = $this->host->repository()->show(
-            Helpers::config('org'), Helpers::config('repo')
-        );
-
-        if (!$repo) {
+        if (!$repo = $this->host->getRepository(Helpers::config('org'), Helpers::config('repo'))) {
             Helpers::abort('Unable to determine current repo.');
         }
 

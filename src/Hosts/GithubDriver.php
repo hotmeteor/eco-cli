@@ -14,8 +14,7 @@ class GithubDriver extends BaseDriver
 
     public function authenticate($token)
     {
-        if (isset($_ENV['GITHUB_API_TOKEN']) ||
-            getenv('GITHUB_API_TOKEN')) {
+        if (isset($_ENV['GITHUB_API_TOKEN']) || getenv('GITHUB_API_TOKEN')) {
             return;
         }
 
@@ -38,9 +37,10 @@ class GithubDriver extends BaseDriver
         return $this->driver->currentUser()->organizations();
     }
 
-    public function getOrganizationRepositories($organization, $per_page = 100)
+    public function getOwnerRepositories($owner, $per_page = 100)
     {
-        return $this->driver->api('organization')->setPerPage($per_page)->repositories($organization);
+        return $this->driver->currentUser()->repositories($owner)->setPerPage($per_page);
+//        return $this->driver->api('organization')->repositories($owner);
     }
 
     public function getCurrentUserRepositories($per_page = 100)
@@ -48,34 +48,51 @@ class GithubDriver extends BaseDriver
         return $this->driver->currentUser()->setPerPage($per_page)->repositories();
     }
 
-    public function getRepository($organization, $name)
+    public function getRepository($owner, $name)
     {
-        // TODO: Implement getRepository() method.
+        return $this->driver->repository()->show($owner, $name);
     }
 
-    public function getSecretKey($organization, $repository)
+    public function getSecretKey($owner, $repository)
     {
-        $response = $this->driver->getHttpClient()->get("/repos/{$organization}/{$repository}/actions/secrets/public-key");
+        $response = $this->driver->getHttpClient()->get("/repos/{$owner}/{$repository}/actions/secrets/public-key");
 
         $content = ResponseMediator::getContent($response);
 
         return $content['key'];
     }
 
-    public function getRemoteFile($organization, $repository, $filename)
+    public function getRemoteFile($owner, $repository, $filename)
     {
         return $this->driver->api('repositories')->contents()->show(
-            $organization, $repository, $filename
+            $owner, $repository, $filename
         );
     }
 
-    public function createRemoteFile($owner, $repo, $file, $contents, $message)
+    public function createRemoteFile($owner, $repository, $file, $contents, $message)
     {
-        // TODO: Implement createRemoteFile() method.
+        return $this->driver->api('repositories')->contents()->create(
+            $owner, $repository, $file, $contents, $message
+        );
     }
 
-    public function putRemoteFile($owner, $repo, $file, $contents, $message, $sha)
+    public function updateRemoteFile($owner, $repository, $file, $contents, $message, $sha = null)
     {
-        // TODO: Implement putRemoteFile() method.
+        return $this->driver->api('repositories')->contents()->update(
+            $owner, $repository, $file, $contents, $message, $sha
+        );
+    }
+
+    public function upsertRemoteFile($owner, $repository, $file, $contents, $message, $sha = null)
+    {
+        if ($this->driver->exists($owner, $repository, $file)) {
+            return $this->updateRemoteFile(
+                $owner, $repository, $file, $contents, $message, $sha
+            );
+        }
+
+        return $this->createRemoteFile(
+            $owner, $repository, $file, $contents, $message
+        );
     }
 }

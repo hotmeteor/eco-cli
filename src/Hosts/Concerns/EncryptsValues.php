@@ -1,6 +1,6 @@
 <?php
 
-namespace Eco\EcoCli\Concerns;
+namespace Eco\EcoCli\Hosts\Concerns;
 
 trait EncryptsValues
 {

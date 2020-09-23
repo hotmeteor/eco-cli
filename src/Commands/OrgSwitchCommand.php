@@ -29,7 +29,7 @@ class OrgSwitchCommand extends Command
     {
         $this->authenticate();
 
-        $organizations = $this->host->currentUser()->organizations();
+        $organizations = $this->host->getOrganizations();
 
         $all_organizations = collect($organizations)->sortBy->login->prepend(
             Arr::only($this->host->currentUser()->show(), ['id', 'login'])

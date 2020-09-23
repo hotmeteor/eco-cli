@@ -93,7 +93,7 @@ class InitCommand extends Command
     {
         $repos = Helpers::config('org') === $this->current_user['login']
             ? $this->host->getCurrentUserRepositories()
-            : $this->host->getOrganizationRepositories(Helpers::config('org'));
+            : $this->host->getOwnerRepositories(Helpers::config('org'));
 
         $repo_id = $this->menu(
             'Which repository should be used? You can always switch this later.',

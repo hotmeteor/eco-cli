@@ -2,7 +2,7 @@
 
 namespace Eco\EcoCli\Commands;
 
-use Eco\EcoCli\Concerns\DecryptsValues;
+use Eco\EcoCli\Hosts\Concerns\DecryptsValues;
 use Eco\EcoCli\Helpers;
 
 class EnvPullCommand extends Command

@@ -2,17 +2,12 @@
 
 namespace Eco\EcoCli\Commands;
 
-use Eco\EcoCli\Concerns\DecryptsValues;
-use Eco\EcoCli\Concerns\EncryptsValues;
 use Eco\EcoCli\Helpers;
 use Illuminate\Support\Arr;
 use Symfony\Component\Console\Input\InputArgument;
 
 class EnvPushCommand extends Command
 {
-    use EncryptsValues;
-    use DecryptsValues;
-
     protected $public_key;
 
     protected $values;
@@ -45,7 +40,7 @@ class EnvPushCommand extends Command
 
         $this->setPublicKey($owner, $repo);
 
-        if ($this->getCurrentContents($owner, $repo, $key)) {
+        if ($this->keyExists($owner, $repo, $key)) {
             if (Helpers::confirm('This environment key already exists. Are you sure you want to change it?')) {
                 $this->setValue($owner, $repo, $key, $value);
             }
@@ -54,27 +49,23 @@ class EnvPushCommand extends Command
         }
     }
 
-    protected function setPublicKey($owner, $repo)
+    protected function setPublicKey($owner, $repo): void
     {
         $this->public_key = $this->host->getPublicKey($owner, $repo);
     }
 
-    protected function getCurrentContents($owner, $repo, $key)
+    protected function keyExists($owner, $repo, $key): bool
     {
         try {
             $response = $this->host->getRemoteFile(
                 $owner, $repo, $this->eco_file
             );
 
+            $decrypted = $this->host->decryptContents(
+                $response['content'], $this->public_key['key']
+            );
+
             $this->sha = $response['sha'];
-
-            $content = json_decode(base64_decode($response['content'], true));
-
-            $values = base64_decode($content->values, true);
-            $nonce = base64_decode($content->nonce, true);
-
-            $decrypted = json_decode(self::decrypt($this->public_key['key'], $values, $nonce), true);
-
             $this->values = $decrypted;
 
             return array_key_exists($key, $decrypted);
@@ -85,24 +76,20 @@ class EnvPushCommand extends Command
         }
     }
 
-    protected function setValue($owner, $repo, $key, $value)
+    protected function setValue($owner, $repo, $key, $value): void
     {
-        $values = Arr::set($this->values, $key, $value);
-
-        $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
-
-        $payload = json_encode([
-            'values' => base64_encode(self::encrypt($this->public_key['key'], json_encode($values), $nonce)),
-            'nonce' => base64_encode($nonce),
-        ]);
+        $payload = $this->host->encryptContents(
+            Arr::set($this->values, $key, $value),
+            $this->public_key
+        );
 
         try {
             if ($this->sha) {
-                $this->host->api('repositories')->contents()->update(
+                $this->host->updateRemoteFile(
                     $owner, $repo, $this->eco_file, $payload, 'Update .eco values', $this->sha
                 );
             } else {
-                $this->host->api('repositories')->contents()->create(
+                $this->host->createRemoteFile(
                     $owner, $repo, $this->eco_file, $payload, 'Create initial .eco file'
                 );
             }
