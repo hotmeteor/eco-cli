@@ -1,49 +1,63 @@
 {
-  "name": "hotmeteor/eco-cli",
-  "description": "Eco CLI for Laravel .env syncing",
-  "type": "project",
-  "authors": [
-    {
-      "name": "Adam Campbell",
-      "email": "adam@hotmeteor.com"
-    }
-  ],
-  "bin": [
-    "eco"
-  ],
-  "require": {
-    "php": "^7.2",
-    "hotmeteor/eco-env": "^1.0",
-    "illuminate/container": "^6.0|^7.0|^8.0",
-    "illuminate/filesystem": "^6.0|^7.0|^8.0",
-    "illuminate/support": "^6.0|^7.0|^8.0",
-    "knplabs/github-api": "^2.15",
-    "php-http/guzzle6-adapter": "^1.1",
-    "ramsey/uuid": "^3.8|^4.0",
-    "symfony/console": "^4.2|^5.0",
-    "symfony/process": "^4.2|^5.0",
-    "symfony/var-dumper": "^4.2|^5.0",
-    "symfony/yaml": "^4.2|^5.0",
-    "vlucas/phpdotenv": "^3.0|^4.0|^5.0"
-  },
-  "require-dev": {
-    "phpunit/phpunit": "^8.0",
-    "orchestra/testbench": "^4.0|^5.0"
-  },
-  "autoload": {
-    "psr-4": {
-      "Eco\\EcoCli\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Eco\\EcoCli\\Tests\\": "tests"
-    }
-  },
-  "config": {
-    "sort-packages": true,
-    "optimize-autoloader": true
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "name": "laravel-zero/laravel-zero",
+    "description": "The Laravel Zero Framework.",
+    "keywords": ["framework", "laravel", "laravel zero", "console", "cli"],
+    "homepage": "https://laravel-zero.com",
+    "type": "project",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/laravel-zero/laravel-zero/issues",
+        "source": "https://github.com/laravel-zero/laravel-zero"
+    },
+    "authors": [
+        {
+            "name": "Nuno Maduro",
+            "email": "enunomaduro@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3",
+        "ext-json": "*",
+        "ext-sodium": "*",
+        "bitbucket/client": "^3.1",
+        "hotmeteor/eco-env": "^1.0",
+        "http-interop/http-factory-guzzle": "^1.0",
+        "illuminate/container": "^6.0|^7.0|^8.0",
+        "illuminate/filesystem": "^6.0|^7.0|^8.0",
+        "illuminate/support": "^6.0|^7.0|^8.0",
+        "knplabs/github-api": "^2.15",
+        "laminas/laminas-text": "^2.7",
+        "laravel-zero/framework": "^8.0",
+        "m4tthumphrey/php-gitlab-api": "^10.0",
+        "nunomaduro/laravel-console-menu": "^3.1",
+        "php-http/guzzle6-adapter": "^2.0.1",
+        "php-http/httplug": "^2.0",
+        "ramsey/uuid": "^3.8|^4.0",
+        "symfony/console": "^4.2|^5.0",
+        "symfony/process": "^4.2|^5.0",
+        "symfony/var-dumper": "^4.2|^5.0",
+        "symfony/yaml": "^4.2|^5.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.4.2",
+        "phpunit/phpunit": "^9.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "bin": ["eco"]
 }

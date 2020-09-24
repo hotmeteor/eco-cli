@@ -1,11 +1,7 @@
-bin/
-vendor/
-.vapor/
-public/*
-.env
-seed.php
-.env.production
-.env.staging
-vapor.phar
+/vendor
+/.idea
+/.vscode
+/.vagrant
 .phpunit.result.cache
 .DS_Store
+.env
