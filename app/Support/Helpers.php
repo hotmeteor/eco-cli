@@ -39,4 +39,32 @@ class Helpers
     {
         return $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'];
     }
+
+    /**
+     * Format .env key.
+     *
+     * @param $key
+     * @return string
+     */
+    public static function formatKey($key)
+    {
+        return strtoupper(trim($key));
+    }
+
+    /**
+     * Format .env value.
+     *
+     * @param $value
+     * @return string
+     */
+    public static function formatValue($value)
+    {
+        $value = trim($value);
+
+        if (str_contains($value, ' ')) {
+            $value = "'{$value}'";
+        }
+
+        return $value;
+    }
 }

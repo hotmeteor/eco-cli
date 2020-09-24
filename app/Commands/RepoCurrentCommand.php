@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 
 class RepoCurrentCommand extends Command
 {
@@ -29,7 +29,7 @@ class RepoCurrentCommand extends Command
     {
         $this->authenticate();
 
-        if (!$repo = $this->driver()->getRepository(Config::get('org'), Config::get('repo'))) {
+        if (!$repo = $this->driver()->getRepository(Vault::get('org'), Vault::get('repo'))) {
             $this->abort('Unable to determine current repo.');
         }
 

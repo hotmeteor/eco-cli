@@ -3,8 +3,10 @@
 namespace App\Commands;
 
 use App\Hosts\Driver;
-use App\Support\Config;
+use App\Hosts\HostManager;
+use App\Support\Vault;
 use Eco\Env;
+use Github\Exception\InvalidArgumentException;
 use LaravelZero\Framework\Commands\Command as ZeroCommand;
 
 abstract class Command extends ZeroCommand
@@ -19,7 +21,7 @@ abstract class Command extends ZeroCommand
 
     protected $env_example_file = '.env.example';
 
-    protected $eco_file = '.eco';
+    protected $vault_file = '.eco';
 
     /**
      * Aliases for the command.
@@ -32,14 +34,24 @@ abstract class Command extends ZeroCommand
     {
         parent::configure();
 
-        $this->host = app('host');
+        $this->host = app(HostManager::class);
 
         $this->setAliases($this->aliases);
     }
 
-    protected function driver(): Driver
+    protected function driver()
     {
         return $this->host->driver();
+    }
+
+    public function envFile()
+    {
+        return $this->env_file;
+    }
+
+    public function vaultFile()
+    {
+        return $this->vault_file;
     }
 
     /**
@@ -49,14 +61,16 @@ abstract class Command extends ZeroCommand
      */
     public function authenticate()
     {
-        $token = empty(Config::get('token')) ? $this->secret('Github Token') : Config::get('token');
+        $token = empty(Vault::get('token')) ? $this->secret('Github Token') : Vault::get('token');
 
         $this->driver()->authenticate($token);
 
         try {
             $this->driver()->getCurrentUser();
 
-            Config::set('token', $token);
+            Vault::set('token', $token);
+        } catch (InvalidArgumentException $exception) {
+            $this->abort($exception->getMessage());
         } catch (\Exception $exception) {
             $this->abort(
                 $exception->getMessage() === 'Bad credentials'

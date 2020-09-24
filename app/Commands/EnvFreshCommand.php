@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 
 class EnvFreshCommand extends Command
 {
@@ -27,18 +27,18 @@ class EnvFreshCommand extends Command
      */
     public function handle()
     {
-        if ($this->confirm('Are you sure you want a fresh .env? This will overwrite your existing .env file.', false)) {
+        if ($this->confirm('Are you sure you want a fresh .env? This will overwrite your existing .env file.')) {
             $this->authenticate();
 
-            $response = $this->driver()->getRemoteFile(
-                Config::get('org'), Config::get('repo'), '.env.example'
+            $file = $this->driver()->getRemoteFile(
+                Vault::get('org'), Vault::get('repo'), $this->env_example_file
             );
 
-            if (!$response) {
-                $this->abort('Unable to find .env.example file in repo.');
+            if (!$file) {
+                $this->abort("Unable to find {$this->env_example_file} file in repo.");
             }
 
-            file_put_contents($this->env_file, base64_decode($response['content'], true));
+            file_put_contents($this->envFile(), $file->contents);
 
             $this->output->writeln('<info>Your</info> <comment>.env</comment> <info>file has been refreshed.</info>');
         }

@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 
 class EnvUnsetCommand extends Command
 {
@@ -34,10 +34,10 @@ class EnvUnsetCommand extends Command
     {
         $key = $this->asksForKey();
 
-        $org = Config::get('repo');
-        $repo = Config::get('repo');
+        $org = Vault::get('repo');
+        $repo = Vault::get('repo');
 
-        Config::unset("{$org}.{$repo}.{$key}");
+        Vault::unset("{$org}.{$repo}.{$key}");
 
         $this->unsetLine('.env', $key);
 

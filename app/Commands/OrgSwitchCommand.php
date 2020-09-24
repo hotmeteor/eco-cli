@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 use Illuminate\Support\Arr;
 
 class OrgSwitchCommand extends Command
@@ -43,8 +43,8 @@ class OrgSwitchCommand extends Command
             })->all()
         )->open();
 
-        Config::set('org', $all_organizations->firstWhere('id', $org_id)['login']);
-        Config::set('repo', null);
+        Vault::set('org', $all_organizations->firstWhere('id', $org_id)['login']);
+        Vault::set('repo', null);
 
         $this->info('Organization set successfully.');
     }

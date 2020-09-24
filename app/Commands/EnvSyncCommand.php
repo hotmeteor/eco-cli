@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 
 class EnvSyncCommand extends Command
 {
@@ -32,8 +32,8 @@ class EnvSyncCommand extends Command
 
         $this->authenticate();
 
-        $org = Config::get('org');
-        $repo = Config::get('repo');
+        $org = Vault::get('org');
+        $repo = Vault::get('repo');
 
         $this->task('Settings up file', function () {
             return $this->setupFile();
@@ -47,13 +47,13 @@ class EnvSyncCommand extends Command
             return $this->assignRemoteValues($org, $repo);
         });
 
-        $this->line("<info>Your {$this->env_file} file has been synced.</info>");
+        $this->line("<info>Your .env file has been synced.</info>");
     }
 
     protected function setupFile()
     {
-        if (!file_exists($this->env_file)) {
-            file_put_contents($this->env_file, '', true);
+        if (!file_exists($this->envFile())) {
+            file_put_contents($this->envFile(), '', true);
         }
 
         return true;
@@ -61,10 +61,10 @@ class EnvSyncCommand extends Command
 
     protected function assignLocalValues($org, $repo): bool
     {
-        $data = Config::get("{$org}.{$repo}") ?? [];
+        $data = Vault::get("{$org}.{$repo}") ?? [];
 
         foreach ($data as $key => $value) {
-            $this->setLine($this->env_file, $key, $value);
+            $this->setLine($this->envFile(), $key, $value);
         }
 
         return true;
@@ -73,7 +73,7 @@ class EnvSyncCommand extends Command
     protected function assignRemoteValues($owner, $repo)
     {
         $file = $this->driver()->getRemoteFile(
-            $owner, $repo, $this->eco_file
+            $owner, $repo, $this->vaultFile()
         );
 
         $data = $this->driver()->decryptContents(
@@ -81,7 +81,7 @@ class EnvSyncCommand extends Command
         );
 
         foreach ($data as $key => $value) {
-            if (!$this->option('force') && $this->findLine($this->env_file, $key)) {
+            if (!$this->option('force') && $this->findLine($this->envFile(), $key)) {
                 if ($this->confirm("The {$key} variable already exists in your local .env. Do you want to overwrite it?")) {
                     $this->set($key, $value);
                 }
@@ -95,6 +95,6 @@ class EnvSyncCommand extends Command
 
     protected function set($key, $value)
     {
-        $this->setLine($this->env_file, $key, $value);
+        $this->setLine($this->envFile(), $key, $value);
     }
 }

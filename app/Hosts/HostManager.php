@@ -3,6 +3,7 @@
 namespace App\Hosts;
 
 use App\Hosts\Contracts\DriverContract;
+use App\Support\Vault;
 use Bitbucket\Client as BitbucketClient;
 use Github\Client as GithubClient;
 use Gitlab\Client as GitlabClient;
@@ -12,7 +13,7 @@ class HostManager extends Manager
 {
     public function getDefaultDriver()
     {
-        return 'github';
+        return Vault::get('driver') ?? 'github';
     }
 
     public function createGithubDriver(): DriverContract

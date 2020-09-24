@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 use App\Support\Helpers;
 use Illuminate\Support\Arr;
 
@@ -37,8 +37,8 @@ class EnvPushCommand extends Command
     {
         $this->authenticate();
 
-        $owner = Config::get('org');
-        $repo = Config::get('repo');
+        $owner = Vault::get('org');
+        $repo = Vault::get('repo');
 
         $key = $this->asksForKey();
 
@@ -73,7 +73,7 @@ class EnvPushCommand extends Command
     {
         try {
             $file = $this->driver()->getRemoteFile(
-                $owner, $repo, $this->eco_file
+                $owner, $repo, $this->vaultFile()
             );
 
             $decrypted = $this->driver()->decryptContents(
@@ -101,16 +101,16 @@ class EnvPushCommand extends Command
         try {
             if ($this->hash) {
                 $this->driver()->updateRemoteFile(
-                    $owner, $repo, $this->eco_file, $payload, 'Update .eco values', $this->hash
+                    $owner, $repo, $this->vaultFile(), $payload, 'Update .eco values', $this->hash
                 );
             } else {
                 $this->driver()->createRemoteFile(
-                    $owner, $repo, $this->eco_file, $payload, 'Create initial .eco file'
+                    $owner, $repo, $this->vaultFile(), $payload, 'Create initial .eco file'
                 );
             }
 
             if ($this->option('set')) {
-                Config::set("{$owner}.{$repo}.{$key}", $value);
+                Vault::set("{$owner}.{$repo}.{$key}", $value);
             }
 
             $this->info(Helpers::exclaim().'! The value was successfully added to the .eco file.');

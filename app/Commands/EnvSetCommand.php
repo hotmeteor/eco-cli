@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 
 class EnvSetCommand extends Command
 {
@@ -32,12 +32,12 @@ class EnvSetCommand extends Command
 
         $value = $this->ask('What is the value?');
 
-        $org = Config::get('org');
-        $repo = Config::get('repo');
+        $org = Vault::get('org');
+        $repo = Vault::get('repo');
 
-        Config::set("{$org}.{$repo}.{$key}", $value);
+        Vault::set("{$org}.{$repo}.{$key}", $value);
 
-        $this->setLine('.env', $key, $value);
+        $this->setLine($this->envFile(), $key, $value);
 
         $this->output->writeln('<info>The</info> <comment>'.$key.'</comment> <info>value has been stored and added to your .env file.</info>');
     }
@@ -48,6 +48,6 @@ class EnvSetCommand extends Command
             $key = $this->ask('What key should be set?');
         }
 
-        return strtoupper(trim($key));
+        return $key;
     }
 }

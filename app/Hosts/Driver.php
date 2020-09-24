@@ -12,7 +12,7 @@ abstract class Driver implements DriverContract, SecurityContract
 
     protected $client;
 
-    public function __construct($client)
+    public function __construct($client = null)
     {
         $this->client = $client;
     }

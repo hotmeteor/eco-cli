@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 use Illuminate\Support\Arr;
 
 class OrgCurrentCommand extends Command
@@ -36,7 +36,7 @@ class OrgCurrentCommand extends Command
             Arr::only($this->driver()->getCurrentUser(), ['id', 'login'])
         );
 
-        $org = $all_organizations->firstWhere('login', Config::get('org'));
+        $org = $all_organizations->firstWhere('login', Vault::get('org'));
 
         if (!$org) {
             $this->abort('Unable to determine current organization.');

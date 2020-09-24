@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 use App\Support\Helpers;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Arr;
@@ -55,7 +55,7 @@ class InitCommand extends Command
         $this->info('To start, you will need a Github Personal Access token.');
         $this->comment('https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token');
 
-        Config::set('token', '');
+        Vault::set('token', '');
 
         $this->authenticate();
 
@@ -82,16 +82,16 @@ class InitCommand extends Command
             })->all()
         )->open();
 
-        Config::set('org', $all_organizations->firstWhere('id', $org_id)['login']);
+        Vault::set('org', $all_organizations->firstWhere('id', $org_id)['login']);
 
         $this->info('Organization set successfully.');
     }
 
     protected function ensureCurrentRepoIsSet()
     {
-        $repos = Config::get('org') === $this->current_user['login']
+        $repos = Vault::get('org') === $this->current_user['login']
             ? $this->driver()->getCurrentUserRepositories()
-            : $this->driver()->getOwnerRepositories(Config::get('org'));
+            : $this->driver()->getOwnerRepositories(Vault::get('org'));
 
         $repo_id = $this->choice(
             'Which repository should be used? You can always switch this later.',
@@ -102,7 +102,7 @@ class InitCommand extends Command
 
         $key = is_numeric($repo_id) ? 'id' : 'name';
 
-        Config::set('repo', collect($repos)->firstWhere($key, $repo_id)['name']);
+        Vault::set('repo', collect($repos)->firstWhere($key, $repo_id)['name']);
 
         $this->info('Repository set successfully.');
     }

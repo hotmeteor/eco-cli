@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Support\Config;
+use App\Support\Vault;
 
 class RepoSwitchCommand extends Command
 {
@@ -30,9 +30,9 @@ class RepoSwitchCommand extends Command
     {
         $this->authenticate();
 
-        $repos = Config::get('org') === $this->current_user['login']
+        $repos = Vault::get('org') === $this->current_user['login']
             ? $this->driver()->getCurrentUserRepositories()
-            : $this->driver()->getOwnerRepositories(Config::get('org'));
+            : $this->driver()->getOwnerRepositories(Vault::get('org'));
 
         if (!empty($this->option('name'))) {
             $repo = collect($repos)->where('name', $this->option('name'))->first();
@@ -55,7 +55,7 @@ class RepoSwitchCommand extends Command
 
         $key = is_numeric($repo_id) ? 'id' : 'name';
 
-        Config::set('repo', collect($repos)->firstWhere($key, $repo_id)['name']);
+        Vault::set('repo', collect($repos)->firstWhere($key, $repo_id)['name']);
 
         $this->info('Repository set successfully.');
     }

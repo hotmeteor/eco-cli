@@ -4,7 +4,7 @@ namespace App\Support;
 
 use Illuminate\Support\Arr;
 
-class Config
+class Vault
 {
     /**
      * Get the given configuration value.
