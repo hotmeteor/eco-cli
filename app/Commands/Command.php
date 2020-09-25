@@ -90,7 +90,7 @@ abstract class Command extends ZeroCommand
             'bitbucket' => 'Bitbucket',
         ]);
 
-        $token = $this->secret('Token:');
+        $token = $this->secret('Token');
 
         Vault::set('driver', $driver);
         Vault::set('token', $token);
