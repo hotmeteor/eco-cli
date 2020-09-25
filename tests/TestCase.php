@@ -42,7 +42,7 @@ abstract class TestCase extends BaseTestCase
     {
         Vault::set('driver', $driver);
 
-        $class = '\\App\\Hosts\\'.Str::studly("{$driver}_driver");
+        $class = '\\App\\Hosts\\Drivers\\'.Str::studly("{$driver}_driver");
 
         $mock = $this->createMock(get_class(new $class()));
 

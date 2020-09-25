@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\File;
+use App\Hosts\Data\File;
 use App\Support\Vault;
 use Tests\TestCase;
 

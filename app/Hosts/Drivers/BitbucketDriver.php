@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Hosts;
+namespace App\Hosts\Drivers;
 
+use App\Hosts\Data\File;
 use Bitbucket\Client;
-use App\Models\File;
 
 class BitbucketDriver extends Driver
 {

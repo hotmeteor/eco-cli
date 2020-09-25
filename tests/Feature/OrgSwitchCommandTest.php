@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Hosts\Data\Organization;
 use App\Support\Vault;
 use Tests\TestCase;
 
@@ -16,9 +17,9 @@ class OrgSwitchCommandTest extends TestCase
 
         $mock->expects($this->once())
             ->method('getOrganizations')
-            ->willReturn([
-                ['id' => 1, 'login' => 'ecoorg'],
-            ]);
+            ->willReturn(
+                collect([new Organization(1, 'ecoorg')])
+            );
 
         $mock->expects($this->atLeastOnce())
             ->method('getCurrentUser')

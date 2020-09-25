@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\File;
+use App\Hosts\Data\File;
 use Tests\TestCase;
 
 class EnvPushCommandTest extends TestCase

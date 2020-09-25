@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Hosts;
+namespace App\Hosts\Drivers;
 
-use App\Models\File;
+use App\Hosts\Data\File;
+use App\Hosts\Data\Organization;
+use App\Hosts\Data\Repository;
+use Illuminate\Support\Collection;
 
 class FakeDriver extends Driver
 {
@@ -47,6 +50,14 @@ class FakeDriver extends Driver
     }
 
     public function updateRemoteFile($owner, $repository, $file, $contents, $message, $sha = null)
+    {
+    }
+
+    public function mapOrganization($item): Organization
+    {
+    }
+
+    public function mapRepository($item): Repository
     {
     }
 }

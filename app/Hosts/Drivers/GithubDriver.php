@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Hosts;
+namespace App\Hosts\Drivers;
 
-use App\Models\File;
+use App\Hosts\Data\File;
+use App\Hosts\Data\Organization;
+use App\Hosts\Data\Repository;
 use Github\Client;
 use Github\HttpClient\Message\ResponseMediator;
 
@@ -25,18 +27,23 @@ class GithubDriver extends Driver
 
     public function getOrganizations()
     {
-        return $this->client()->currentUser()->organizations();
+        return $this->collectOrganizations(
+            $this->client()->currentUser()->organizations()
+        );
     }
 
     public function getOwnerRepositories($owner, $per_page = 100)
     {
-        return $this->client()->api('organization')->setPerPage($per_page)->repositories($owner);
-//        return $this->driver()->api('organization')->repositories($owner);
+        return $this->collectRepositories(
+            $this->client()->api('organization')->setPerPage($per_page)->repositories($owner)
+        );
     }
 
     public function getCurrentUserRepositories($per_page = 100)
     {
-        return $this->client()->currentUser()->setPerPage($per_page)->repositories();
+        return $this->collectRepositories(
+            $this->client()->currentUser()->setPerPage($per_page)->repositories()
+        );
     }
 
     public function getRepository($owner, $name)
@@ -77,5 +84,15 @@ class GithubDriver extends Driver
         return $this->client()->api('repositories')->contents()->update(
             $owner, $repository, $file, $contents, $message, $sha
         );
+    }
+
+    public function mapOrganization($item): Organization
+    {
+        return new Organization($item['id'], $item['login']);
+    }
+
+    public function mapRepository($item): Repository
+    {
+        return new Repository($item['id'], $item['name']);
     }
 }

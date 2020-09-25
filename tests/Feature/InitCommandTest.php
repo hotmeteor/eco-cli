@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Hosts\Data\Organization;
+use App\Hosts\Data\Repository;
 use App\Support\Vault;
 use Tests\TestCase;
 
@@ -30,15 +32,19 @@ class InitCommandTest extends TestCase
 
         $mock->expects($this->once())
             ->method('getOrganizations')
-            ->willReturn([
-                ['id' => 2222, 'login' => 'hotmeteor'],
-            ]);
+            ->willReturn(
+                collect([
+                    new Organization(2222, 'hotmeteor'),
+                ])
+            );
 
         $mock->expects($this->once())
             ->method('getCurrentUserRepositories')
-            ->willReturn([
-                ['id' => 3333, 'name' => 'eco-cli'],
-            ]);
+            ->willReturn(
+                collect([
+                    new Repository(3333, 'eco-cli'),
+                ])
+            );
 
         $this->artisan('init')
             ->expectsOutput('----')
@@ -80,16 +86,20 @@ class InitCommandTest extends TestCase
 
         $mock->expects($this->once())
             ->method('getOrganizations')
-            ->willReturn([
-                ['id' => 2222, 'login' => 'hotmeteor'],
-                ['id' => 1, 'login' => 'ecoorg'],
-            ]);
+            ->willReturn(
+                collect([
+                    new Organization(2222, 'hotmeteor'),
+                    new Organization(1, 'ecoorg'),
+                ])
+            );
 
         $mock->expects($this->once())
             ->method('getCurrentUserRepositories')
-            ->willReturn([
-                ['id' => 3333, 'name' => 'eco-cli'],
-            ]);
+            ->willReturn(
+                collect([
+                    new Repository(3333, 'eco-cli'),
+                ])
+            );
 
         $this->artisan('init')
             ->expectsOutput('----')

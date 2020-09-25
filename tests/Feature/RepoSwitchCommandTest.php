@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Hosts\Data\Repository;
 use App\Support\Vault;
 use Tests\TestCase;
 
@@ -17,10 +18,12 @@ class RepoSwitchCommandTest extends TestCase
 
         $mock->expects($this->once())
             ->method('getCurrentUserRepositories')
-            ->willReturn([
-                ['id' => 3333, 'name' => 'eco-cli'],
-                ['id' => 4444, 'name' => 'other_repo'],
-            ]);
+            ->willReturn(
+                collect([
+                    new Repository(3333, 'eco-cli'),
+                    new Repository(4444, 'other_repo'),
+                ])
+            );
 
         $this->artisan('repo:switch')
             ->expectsQuestion('Which repository should be used? You can always switch this later.', 4444)
@@ -41,10 +44,12 @@ class RepoSwitchCommandTest extends TestCase
 
         $mock->expects($this->once())
             ->method('getCurrentUserRepositories')
-            ->willReturn([
-                ['id' => 3333, 'name' => 'eco-cli'],
-                ['id' => 4444, 'name' => 'other_repo'],
-            ]);
+            ->willReturn(
+                collect([
+                    new Repository(3333, 'eco-cli'),
+                    new Repository(4444, 'other_repo'),
+                ])
+            );
 
         $this->artisan('repo:switch')
             ->expectsQuestion('Which repository should be used? You can always switch this later.', 'eco-cli')

@@ -2,7 +2,7 @@
 
 namespace App\Hosts\Contracts;
 
-use App\Models\File;
+use App\Hosts\Data\File;
 
 interface DriverContract
 {

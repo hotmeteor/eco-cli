@@ -2,11 +2,13 @@
 
 namespace App\Commands;
 
+use App\Concerns\AsksForOrganization;
 use App\Support\Vault;
-use Illuminate\Support\Arr;
 
 class OrgSwitchCommand extends Command
 {
+    use AsksForOrganization;
+
     /**
      * The signature of the command.
      *
@@ -30,20 +32,7 @@ class OrgSwitchCommand extends Command
     {
         $this->authenticate();
 
-        $organizations = $this->driver()->getOrganizations();
-
-        $all_organizations = collect($organizations)->sortBy->login->prepend(
-            Arr::only($this->driver()->getCurrentUser(), ['id', 'login'])
-        );
-
-        $org_id = $this->keyChoice(
-            'Which organization should be used?',
-            $all_organizations->mapWithKeys(function ($org) {
-                return [$org['id'] => $org['login']];
-            })->all()
-        );
-
-        Vault::set('org', $all_organizations->firstWhere('id', $org_id)['login']);
+        Vault::set('org', $this->asksForOrganization());
         Vault::unset('repo');
 
         $this->info('Organization set successfully.');

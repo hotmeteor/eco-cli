@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Hosts;
+namespace App\Hosts\Drivers;
 
-use App\Models\File;
+use App\Hosts\Data\File;
+use App\Hosts\Drivers\Driver;
 use Gitlab\Client;
 use Gitlab\HttpClient\Message\ResponseMediator;
 

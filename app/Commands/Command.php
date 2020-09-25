@@ -82,6 +82,11 @@ abstract class Command extends ZeroCommand
         }
     }
 
+    protected function currentUser()
+    {
+        return $this->current_user ?? $this->driver()->getCurrentUser();
+    }
+
     protected function getToken()
     {
         $driver = $this->keyChoice('What code host do you use?', [

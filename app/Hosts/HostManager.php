@@ -3,6 +3,9 @@
 namespace App\Hosts;
 
 use App\Hosts\Contracts\DriverContract;
+use App\Hosts\Drivers\BitbucketDriver;
+use App\Hosts\Drivers\GithubDriver;
+use App\Hosts\Drivers\GitlabDriver;
 use App\Support\Vault;
 use Bitbucket\Client as BitbucketClient;
 use Github\Client as GithubClient;

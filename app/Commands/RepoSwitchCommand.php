@@ -2,10 +2,13 @@
 
 namespace App\Commands;
 
+use App\Concerns\AsksForRepository;
 use App\Support\Vault;
 
 class RepoSwitchCommand extends Command
 {
+    use AsksForRepository;
+
     /**
      * The signature of the command.
      *
@@ -28,36 +31,15 @@ class RepoSwitchCommand extends Command
      */
     public function handle()
     {
-        $this->authenticate();
+        if (empty($this->option('name'))) {
+            $this->authenticate();
 
-        $repos = Vault::get('org') === $this->current_user['login']
-            ? $this->driver()->getCurrentUserRepositories()
-            : $this->driver()->getOwnerRepositories(Vault::get('org'));
-
-        $repo_id = null;
-
-        if (!empty($this->option('name'))) {
-            $repo = collect($repos)->where('name', $this->option('name'))->first();
-
-            if (empty($repo)) {
-                $this->abort('Repo not found.');
-            }
-
-            $repo_id = $repo['id'];
+            $name = $this->asksForRepository();
+        } else {
+            $name = $this->option('name');
         }
 
-        if (is_null($repo_id)) {
-            $repo_id = $this->choice(
-                'Which repository should be used? You can always switch this later.',
-                collect($repos)->sortBy->name->mapWithKeys(function ($repo) {
-                    return [$repo['id'] => $repo['name']];
-                })->all()
-            );
-        }
-
-        $key = is_numeric($repo_id) ? 'id' : 'name';
-
-        Vault::set('repo', collect($repos)->firstWhere($key, $repo_id)['name']);
+        Vault::set('repo', $name);
 
         $this->info('Repository set successfully.');
     }
