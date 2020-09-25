@@ -20,7 +20,7 @@ abstract class TestCase extends BaseTestCase
 
         Vault::set('org', 'my_org');
         Vault::set('repo', 'my_repo');
-        Vault::set('token', 'this-is-my-token');
+        Vault::set('token', 'my-token');
     }
 
     public static function envFile(): string
@@ -53,5 +53,17 @@ abstract class TestCase extends BaseTestCase
         });
 
         return $mock;
+    }
+
+    protected function mockAuthenticate($mock)
+    {
+        $mock->expects($this->once())
+            ->method('authenticate')
+            ->with('my-token')
+            ->willReturn(null);
+
+        $mock->expects($this->atLeastOnce())
+            ->method('getCurrentUser')
+            ->willReturn(['id' => 1, 'login' => 'hotmeteor']);
     }
 }

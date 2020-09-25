@@ -4,8 +4,15 @@
             "KEY": "value"
         }
     },
+    "hotmeteor": {
+        "eco-cli": {
+            "KEY": "value",
+            "THIS": "that",
+            "UP": "down"
+        }
+    },
     "token": "my-token",
-    "driver": "github",
-    "org": "ecoorg",
+    "driver": "fake",
+    "org": "hotmeteor",
     "repo": "eco-cli"
 }

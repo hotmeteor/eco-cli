@@ -28,14 +28,14 @@ class EnvSyncCommand extends Command
      */
     public function handle()
     {
-        $this->info('Syncing will use your local variables, but ask you about conflicting remote variables.');
-
         $this->authenticate();
+
+        $this->info('Syncing will use your local variables, but ask you about conflicting remote variables.');
 
         $org = Vault::get('org');
         $repo = Vault::get('repo');
 
-        $this->task('Settings up file', function () {
+        $this->task('Setting up file', function () {
             return $this->setupFile();
         });
 
@@ -47,7 +47,7 @@ class EnvSyncCommand extends Command
             return $this->assignRemoteValues($org, $repo);
         });
 
-        $this->line("<info>Your .env file has been synced.</info>");
+        $this->line('<info>Your .env file has been synced.</info>');
     }
 
     protected function setupFile()

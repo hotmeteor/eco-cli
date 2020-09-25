@@ -27,12 +27,10 @@ class RepoCurrentCommand extends Command
      */
     public function handle()
     {
-        $this->authenticate();
-
-        if (!$repo = $this->driver()->getRepository(Vault::get('org'), Vault::get('repo'))) {
+        if (!$repo = Vault::get('repo')) {
             $this->abort('Unable to determine current repo.');
         }
 
-        $this->output->writeln('<info>You are currently working in the</info> <comment>['.$repo['name'].']</comment> <info>repository.</info>');
+        $this->output->writeln('<info>You are currently working in the</info> <comment>['.$repo.']</comment> <info>repository.</info>');
     }
 }

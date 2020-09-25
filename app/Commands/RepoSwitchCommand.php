@@ -34,6 +34,8 @@ class RepoSwitchCommand extends Command
             ? $this->driver()->getCurrentUserRepositories()
             : $this->driver()->getOwnerRepositories(Vault::get('org'));
 
+        $repo_id = null;
+
         if (!empty($this->option('name'))) {
             $repo = collect($repos)->where('name', $this->option('name'))->first();
 

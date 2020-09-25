@@ -36,15 +36,15 @@ class OrgSwitchCommand extends Command
             Arr::only($this->driver()->getCurrentUser(), ['id', 'login'])
         );
 
-        $org_id = $this->menu(
+        $org_id = $this->keyChoice(
             'Which organization should be used?',
             $all_organizations->mapWithKeys(function ($org) {
                 return [$org['id'] => $org['login']];
             })->all()
-        )->open();
+        );
 
         Vault::set('org', $all_organizations->firstWhere('id', $org_id)['login']);
-        Vault::set('repo', null);
+        Vault::unset('repo');
 
         $this->info('Organization set successfully.');
     }
