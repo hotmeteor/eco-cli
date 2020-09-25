@@ -2,9 +2,9 @@
 
 namespace Tests;
 
-use App\Hosts\FakeDriver;
 use App\Hosts\HostManager;
 use App\Support\Vault;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
@@ -15,19 +15,17 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        Vault::set('driver', 'fake');
+        config(['app.env_path' => base_path('tests/Fixtures')]);
+        config(['app.home_path' => base_path('tests/Fixtures')]);
+
+        Vault::set('org', 'my_org');
+        Vault::set('repo', 'my_repo');
         Vault::set('token', 'this-is-my-token');
-
-        $manager = $this->app->get(HostManager::class);
-
-        $manager->extend('fake', function () {
-            return new FakeDriver();
-        });
     }
 
     public static function envFile(): string
     {
-        return base_path('.env');
+        return config('app.env_path').'/.env';
     }
 
     public static function set($value): void
@@ -38,5 +36,22 @@ abstract class TestCase extends BaseTestCase
     public static function reset(): void
     {
         self::set('');
+    }
+
+    protected function mockDriver($driver = 'fake')
+    {
+        Vault::set('driver', $driver);
+
+        $class = '\\App\\Hosts\\'.Str::studly("{$driver}_driver");
+
+        $mock = $this->createMock(get_class(new $class()));
+
+        $manager = $this->app->get(HostManager::class);
+
+        $manager->extend($driver, function () use ($mock) {
+            return $mock;
+        });
+
+        return $mock;
     }
 }

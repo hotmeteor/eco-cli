@@ -2,8 +2,8 @@
 
 namespace App\Commands;
 
-use App\Support\Vault;
 use App\Support\Helpers;
+use App\Support\Vault;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Support\Arr;
 
@@ -36,8 +36,6 @@ class InitCommand extends Command
             return $this->displayFailureMessage($e->getResponse());
         }
 
-        $this->current_user = $this->driver()->getCurrentUser();
-
         $this->ensureCurrentOrgIsSet();
         $this->ensureCurrentRepoIsSet();
 
@@ -52,8 +50,8 @@ class InitCommand extends Command
     protected function attemptLogin()
     {
         $this->info('----');
-        $this->info('To start, you will need a Github Personal Access token.');
-        $this->comment('https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token');
+//        $this->info('To start, you will need a Github Personal Access token.');
+//        $this->comment('https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token');
 
         Vault::set('token', '');
 
@@ -75,12 +73,12 @@ class InitCommand extends Command
             Arr::only($this->current_user, ['id', 'login'])
         );
 
-        $org_id = $this->menu(
+        $org_id = $this->keyChoice(
             'Which organization should be used?',
             $all_organizations->mapWithKeys(function ($org) {
                 return [$org['id'] => $org['login']];
             })->all()
-        )->open();
+        );
 
         Vault::set('org', $all_organizations->firstWhere('id', $org_id)['login']);
 

@@ -24,6 +24,7 @@
         "http-interop/http-factory-guzzle": "^1.0",
         "illuminate/container": "^6.0|^7.0|^8.0",
         "illuminate/filesystem": "^6.0|^7.0|^8.0",
+        "illuminate/log": "^8.0",
         "illuminate/support": "^6.0|^7.0|^8.0",
         "knplabs/github-api": "^2.15",
         "laminas/laminas-text": "^2.7",

@@ -3,7 +3,6 @@
 namespace App\Commands;
 
 use App\Support\Vault;
-use App\Support\Helpers;
 use Illuminate\Support\Arr;
 
 class EnvPushCommand extends Command
@@ -44,8 +43,6 @@ class EnvPushCommand extends Command
 
         $value = $this->ask('What is the value?');
 
-        $this->setSecretKey($owner, $repo);
-
         if ($this->keyExists($owner, $repo, $key)) {
             if ($this->confirm('This environment key already exists. Are you sure you want to change it?')) {
                 $this->setValue($owner, $repo, $key, $value);
@@ -64,20 +61,17 @@ class EnvPushCommand extends Command
         return strtoupper(trim($key));
     }
 
-    protected function setSecretKey($owner, $repo): void
-    {
-        $this->secret_key = $this->driver()->getSecretKey($owner, $repo);
-    }
-
     protected function keyExists($owner, $repo, $key): bool
     {
+        $this->setSecretKey($owner, $repo);
+
         try {
             $file = $this->driver()->getRemoteFile(
                 $owner, $repo, $this->vaultFile()
             );
 
             $decrypted = $this->driver()->decryptContents(
-                $file->contents, $this->secret_key['key']
+                $file->contents, $this->secret_key
             );
 
             $this->hash = $file->hash;
@@ -89,6 +83,11 @@ class EnvPushCommand extends Command
 
             return false;
         }
+    }
+
+    protected function setSecretKey($owner, $repo): void
+    {
+        $this->secret_key = $this->driver()->getSecretKey($owner, $repo);
     }
 
     protected function setValue($owner, $repo, $key, $value): void
@@ -113,7 +112,7 @@ class EnvPushCommand extends Command
                 Vault::set("{$owner}.{$repo}.{$key}", $value);
             }
 
-            $this->info(Helpers::exclaim().'! The value was successfully added to the .eco file.');
+            $this->info('The value was successfully added to the .eco file.');
         } catch (\Exception $exception) {
             $this->abort('There was an issue updating the .eco file.');
         }

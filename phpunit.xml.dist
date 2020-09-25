@@ -21,4 +21,7 @@
             <directory suffix=".php">./app</directory>
         </include>
     </coverage>
+    <php>
+        <ini name="env_path" value="./tests/.env"/>
+    </php>
 </phpunit>

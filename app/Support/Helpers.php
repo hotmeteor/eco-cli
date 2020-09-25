@@ -31,16 +31,6 @@ class Helpers
     }
 
     /**
-     * Get the home directory for the user.
-     *
-     * @return string
-     */
-    public static function home()
-    {
-        return $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'];
-    }
-
-    /**
      * Format .env key.
      *
      * @param $key

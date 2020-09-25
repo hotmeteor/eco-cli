@@ -56,4 +56,26 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\HostServiceProvider::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Vault location
+    |--------------------------------------------------------------------------
+    |
+    | The default location for the local .eco vault file.
+    |
+    */
+
+    'home_path' => $_SERVER['HOME'] ?? $_SERVER['USERPROFILE'],
+
+    /*
+    |--------------------------------------------------------------------------
+    | .env location
+    |--------------------------------------------------------------------------
+    |
+    | The default location to search for .env files.
+    |
+    */
+
+    'env_path' => base_path('/'),
 ];

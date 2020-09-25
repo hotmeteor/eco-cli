@@ -77,6 +77,6 @@ class Vault
      */
     protected static function path()
     {
-        return Helpers::home().'/.eco/config.json';
+        return config('app.home_path').'/.eco/config.json';
     }
 }

@@ -6,10 +6,15 @@ use Tests\TestCase;
 
 class EnvUnsetCommandTest extends TestCase
 {
-    public function test_it_should_ask_and_set_value()
+    protected function setUp(): void
     {
-        self::set('KEY=value');
+        parent::setUp();
 
+        self::set('KEY=value');
+    }
+
+    public function test_it_unsets_with_question()
+    {
         $this->artisan('env:unset')
             ->expectsQuestion('What key should be unset?', 'KEY')
             ->expectsOutput('The KEY value has been deleted and removed from your .env file.')
@@ -18,10 +23,8 @@ class EnvUnsetCommandTest extends TestCase
         $this->assertStringEqualsFile(self::envFile(), '');
     }
 
-    public function test_it_should_set_value()
+    public function test_it_unsets_with_provided_key()
     {
-        self::set('KEY=value');
-
         $this->artisan('env:unset KEY')
             ->expectsOutput('The KEY value has been deleted and removed from your .env file.')
             ->assertExitCode(0);

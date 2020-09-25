@@ -39,7 +39,7 @@ class EnvUnsetCommand extends Command
 
         Vault::unset("{$org}.{$repo}.{$key}");
 
-        $this->unsetLine('.env', $key);
+        $this->unsetLine($this->envFile(), $key);
 
         $this->output->writeln('<info>The</info> <comment>'.$key.'</comment> <info>value has been deleted and removed from your .env file.</info>');
     }

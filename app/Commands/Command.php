@@ -2,8 +2,8 @@
 
 namespace App\Commands;
 
-use App\Hosts\Driver;
 use App\Hosts\HostManager;
+use App\Support\KeyChoiceQuestion;
 use App\Support\Vault;
 use Eco\Env;
 use Github\Exception\InvalidArgumentException;
@@ -46,7 +46,7 @@ abstract class Command extends ZeroCommand
 
     public function envFile()
     {
-        return $this->env_file;
+        return config('app.env_path').'/'.$this->env_file;
     }
 
     public function vaultFile()
@@ -61,12 +61,14 @@ abstract class Command extends ZeroCommand
      */
     public function authenticate()
     {
-        $token = empty(Vault::get('token')) ? $this->secret('Github Token') : Vault::get('token');
+        $token = empty(Vault::get('token'))
+            ? $this->getToken()
+            : Vault::get('token');
 
         $this->driver()->authenticate($token);
 
         try {
-            $this->driver()->getCurrentUser();
+            $this->current_user = $this->driver()->getCurrentUser();
 
             Vault::set('token', $token);
         } catch (InvalidArgumentException $exception) {
@@ -80,25 +82,20 @@ abstract class Command extends ZeroCommand
         }
     }
 
-    /**
-     * Ensure the user intends to manipulate the production environment.
-     *
-     * @param string $environment
-     * @param bool $force
-     *
-     * @return void
-     */
-    protected function confirmIfProduction($environment, $force = null)
+    protected function getToken()
     {
-        if (($this->input->hasOption('force') &&
-                $this->option('force')) ||
-            $environment !== 'production') {
-            return;
-        }
+        $driver = $this->keyChoice('What code host do you use?', [
+            'github' => 'Github',
+            'gitlab' => 'Gitlab',
+            'bitbucket' => 'Bitbucket',
+        ]);
 
-        if (!$this->confirm('You are manipulating the production environment. Are you sure you want to proceed', false)) {
-            $this->abort('Action cancelled.');
-        }
+        $token = $this->secret('Token:');
+
+        Vault::set('driver', $driver);
+        Vault::set('token', $token);
+
+        return $token;
     }
 
     public function abort($text)
@@ -111,6 +108,13 @@ abstract class Command extends ZeroCommand
     public function danger($text)
     {
         $this->output->writeln('<fg=red>'.$text.'</>');
+    }
+
+    public function keyChoice($title, $choices)
+    {
+        return $this->output->askQuestion(
+            new KeyChoiceQuestion($title, $choices)
+        );
     }
 
     protected function findLine($file, $key)

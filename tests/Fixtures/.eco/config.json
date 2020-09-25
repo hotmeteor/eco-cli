@@ -1,0 +1,11 @@
+{
+    "my_org": {
+        "my_repo": {
+            "KEY": "value"
+        }
+    },
+    "token": "my-token",
+    "driver": "github",
+    "org": "ecoorg",
+    "repo": "eco-cli"
+}

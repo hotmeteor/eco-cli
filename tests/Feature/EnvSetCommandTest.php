@@ -6,10 +6,15 @@ use Tests\TestCase;
 
 class EnvSetCommandTest extends TestCase
 {
-    public function test_it_should_ask_and_set_value()
+    protected function setUp(): void
     {
-        self::reset();
+        parent::setUp();
 
+        self::reset();
+    }
+
+    public function test_it_sets_with_question()
+    {
         $this->artisan('env:set')
             ->expectsQuestion('What key should be set?', 'KEY')
             ->expectsQuestion('What is the value?', 'value')
@@ -19,10 +24,8 @@ class EnvSetCommandTest extends TestCase
         $this->assertStringEqualsFile(self::envFile(), 'KEY=value'.PHP_EOL);
     }
 
-    public function test_it_should_set_value()
+    public function test_it_sets_with_provided_key()
     {
-        self::reset();
-
         $this->artisan('env:set KEY')
             ->expectsQuestion('What is the value?', 'value')
             ->expectsOutput('The KEY value has been stored and added to your .env file.')
