@@ -2,18 +2,13 @@
 
 namespace App\Concerns;
 
-use App\Hosts\Data\Organization;
 use Illuminate\Support\Collection;
 
 trait AsksForOrganization
 {
     protected function asksForOrganization()
     {
-        $user = $this->currentUser();
-
-        $organizations = $this->driver()->getOrganizations()->sortBy->login->prepend(
-            new Organization($user['id'], $user['login'])
-        );
+        $organizations = $this->driver()->getOrganizations()->sortBy->login->prepend($this->currentUser());
 
         return $organizations->firstWhere('id', $this->getOrganizationChoice($organizations))->login;
     }

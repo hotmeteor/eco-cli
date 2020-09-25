@@ -3,7 +3,9 @@
 namespace App\Hosts\Drivers;
 
 use App\Hosts\Data\File;
-use App\Hosts\Drivers\Driver;
+use App\Hosts\Data\Organization;
+use App\Hosts\Data\Repository;
+use App\Hosts\Data\User;
 use Gitlab\Client;
 use Gitlab\HttpClient\Message\ResponseMediator;
 
@@ -31,31 +33,37 @@ class GitlabDriver extends Driver
         }
     }
 
-    public function getCurrentUser()
+    public function getCurrentUser(): User
     {
         return $this->client()->users()->me();
     }
 
     public function getOrganizations()
     {
-        return $this->client()->groups();
+        return $this->collectOrganizations(
+            $this->client()->groups()->all()
+        );
     }
 
     public function getCurrentUserRepositories($per_page = 100)
     {
-        return $this->client()->projects()->all([
-            'membership' => true,
-            'owned' => true,
-            'simple' => true,
-        ]);
+        return $this->collectRepositories(
+            $this->client()->projects()->all([
+                'membership' => true,
+                'owned' => true,
+                'simple' => true,
+            ])
+        );
     }
 
     public function getOwnerRepositories($owner, $per_page = 100)
     {
-        return $this->client()->projects()->all([
-            'membership' => true,
-            'simple' => true,
-        ]);
+        return $this->collectRepositories(
+            $this->client()->projects()->all([
+                'membership' => true,
+                'simple' => true,
+            ])
+        );
     }
 
     public function getRepository($owner, $name)
@@ -114,5 +122,15 @@ class GitlabDriver extends Driver
                 'commit_message' => $message,
             ]
         );
+    }
+
+    public function mapOrganization($item): Organization
+    {
+        return new Organization($item['id'], $item['name']);
+    }
+
+    public function mapRepository($item): Repository
+    {
+        return new Repository($item['id'], $item['name']);
     }
 }

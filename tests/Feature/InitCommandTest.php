@@ -4,19 +4,25 @@ namespace Tests\Feature;
 
 use App\Hosts\Data\Organization;
 use App\Hosts\Data\Repository;
+use App\Hosts\Data\User;
 use App\Support\Vault;
 use Tests\TestCase;
 
 class InitCommandTest extends TestCase
 {
-    public function test_it_init_with_personal()
+    protected function setUp(): void
     {
-        $mock = $this->mockDriver('github');
+        parent::setUp();
 
         Vault::unset('org');
         Vault::unset('repo');
         Vault::unset('driver');
         Vault::unset('token');
+    }
+
+    public function test_it_init_with_personal()
+    {
+        $mock = $this->mockDriver();
 
         $mock->expects($this->once())
             ->method('authenticate')
@@ -25,16 +31,13 @@ class InitCommandTest extends TestCase
 
         $mock->expects($this->once())
             ->method('getCurrentUser')
-            ->willReturn([
-                'id' => 1,
-                'login' => 'hotmeteor',
-            ]);
+            ->willReturn(new User(1, 'hotmeteor'));
 
         $mock->expects($this->once())
             ->method('getOrganizations')
             ->willReturn(
                 collect([
-                    new Organization(2222, 'hotmeteor'),
+                    new Organization(2222, 'ecoorg'),
                 ])
             );
 
@@ -48,7 +51,7 @@ class InitCommandTest extends TestCase
 
         $this->artisan('init')
             ->expectsOutput('----')
-            ->expectsQuestion('What code host do you use?', 'github')
+            ->expectsQuestion('What code host do you use?', 'fake')
             ->expectsQuestion('Token', 'my-token')
 //            ->expectsOutput('To start, you will need a Github Personal Access token.')
 //            ->expectsOutput('https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token')
@@ -57,7 +60,7 @@ class InitCommandTest extends TestCase
             ->expectsChoice('Which repository should be used? You can always switch this later.', 'eco-cli', ['eco-cli'])
             ->expectsOutput('Repository set successfully.');
 
-        $this->assertSame(Vault::get('driver'), 'github');
+        $this->assertSame(Vault::get('driver'), 'fake');
         $this->assertSame(Vault::get('token'), 'my-token');
         $this->assertSame(Vault::get('org'), 'hotmeteor');
         $this->assertSame(Vault::get('repo'), 'eco-cli');
@@ -65,12 +68,7 @@ class InitCommandTest extends TestCase
 
     public function test_it_init_with_org()
     {
-        $mock = $this->mockDriver('github');
-
-        Vault::unset('org');
-        Vault::unset('repo');
-        Vault::unset('driver');
-        Vault::unset('token');
+        $mock = $this->mockDriver();
 
         $mock->expects($this->once())
             ->method('authenticate')
@@ -79,22 +77,18 @@ class InitCommandTest extends TestCase
 
         $mock->expects($this->once())
             ->method('getCurrentUser')
-            ->willReturn([
-                'id' => 1,
-                'login' => 'ecoorg',
-            ]);
+            ->willReturn(new User(1, 'hotmeteor'));
 
         $mock->expects($this->once())
             ->method('getOrganizations')
             ->willReturn(
                 collect([
-                    new Organization(2222, 'hotmeteor'),
-                    new Organization(1, 'ecoorg'),
+                    new Organization(2222, 'ecoorg'),
                 ])
             );
 
         $mock->expects($this->once())
-            ->method('getCurrentUserRepositories')
+            ->method('getOwnerRepositories')
             ->willReturn(
                 collect([
                     new Repository(3333, 'eco-cli'),
@@ -103,16 +97,16 @@ class InitCommandTest extends TestCase
 
         $this->artisan('init')
             ->expectsOutput('----')
-            ->expectsQuestion('What code host do you use?', 'github')
+            ->expectsQuestion('What code host do you use?', 'fake')
             ->expectsQuestion('Token', 'my-token')
 //            ->expectsOutput('To start, you will need a Github Personal Access token.')
 //            ->expectsOutput('https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token')
-            ->expectsQuestion('Which organization should be used?', 1)
+            ->expectsQuestion('Which organization should be used?', 2222)
             ->expectsOutput('Organization set successfully.')
             ->expectsChoice('Which repository should be used? You can always switch this later.', 'eco-cli', ['eco-cli'])
             ->expectsOutput('Repository set successfully.');
 
-        $this->assertSame(Vault::get('driver'), 'github');
+        $this->assertSame(Vault::get('driver'), 'fake');
         $this->assertSame(Vault::get('token'), 'my-token');
         $this->assertSame(Vault::get('org'), 'ecoorg');
         $this->assertSame(Vault::get('repo'), 'eco-cli');

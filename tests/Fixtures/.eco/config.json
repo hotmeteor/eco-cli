@@ -11,8 +11,11 @@
             "UP": "down"
         }
     },
-    "token": "my-token",
+    "": {
+        "": []
+    },
     "driver": "fake",
+    "token": "my-token",
     "org": "hotmeteor",
     "repo": "eco-cli"
 }

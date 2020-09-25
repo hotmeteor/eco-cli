@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Hosts\Data\User;
 use App\Hosts\HostManager;
 use App\Support\Vault;
 use Illuminate\Support\Str;
@@ -64,6 +65,6 @@ abstract class TestCase extends BaseTestCase
 
         $mock->expects($this->atLeastOnce())
             ->method('getCurrentUser')
-            ->willReturn(['id' => 1, 'login' => 'hotmeteor']);
+            ->willReturn(new User(1, 'hotmeteor'));
     }
 }

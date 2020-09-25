@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Hosts\Data\Organization;
+use App\Hosts\Data\User;
 use App\Support\Vault;
 use Tests\TestCase;
 
@@ -23,7 +24,7 @@ class OrgSwitchCommandTest extends TestCase
 
         $mock->expects($this->atLeastOnce())
             ->method('getCurrentUser')
-            ->willReturn(['id' => 2, 'login' => 'hotmeteor']);
+            ->willReturn(new User(2, 'hotmeteor'));
 
         $this->artisan('org:switch')
             ->expectsQuestion('Which organization should be used?', 2)

@@ -5,6 +5,7 @@ namespace App\Hosts\Drivers;
 use App\Hosts\Data\File;
 use App\Hosts\Data\Organization;
 use App\Hosts\Data\Repository;
+use App\Hosts\Data\User;
 use Github\Client;
 use Github\HttpClient\Message\ResponseMediator;
 
@@ -20,9 +21,11 @@ class GithubDriver extends Driver
         $this->client()->authenticate($token, null, Client::AUTH_ACCESS_TOKEN);
     }
 
-    public function getCurrentUser()
+    public function getCurrentUser(): User
     {
-        return $this->client()->currentUser()->show();
+        $user = $this->client()->currentUser()->show();
+
+        return new User($user['id'], $user['login']);
     }
 
     public function getOrganizations()
