@@ -62,7 +62,7 @@ There are different setups depending on what code host your team uses.
         - Account Email, Read
         - Project Read
         - Repositories Read, Write, Admin
-2. Create an Access Key for your project: https://bitbucket.org/hotmeteor2020/[project]/admin/access-keys/
+2. Create an Access Key for your project: https://bitbucket.org/[workspace]/[project]/admin/access-keys/
     - Name it `eco-cli`
 
 ## Usage
