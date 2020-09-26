@@ -44,7 +44,8 @@ There are different setups depending on what code host your team uses.
 
 #### Github 
 
-A [Github Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) is required. It should be created with the `repo` and `read:org` permissions.
+1. A [Github Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) is required. 
+    - Choose `repo` and `read:org` permissions
 
 #### Gitlab
 
@@ -63,10 +64,6 @@ A [Github Personal Access Token](https://docs.github.com/en/github/authenticatin
         - Repositories Read, Write, Admin
 2. Create an Access Key for your project: https://bitbucket.org/hotmeteor2020/[project]/admin/access-keys/
     - Name it `eco-cli`
-
-```shell script
-$ eco init
-```
 
 ## Usage
 
