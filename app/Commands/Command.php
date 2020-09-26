@@ -66,9 +66,9 @@ abstract class Command extends ZeroCommand
             call_user_func_array([$this->driver(), 'authenticate'], $credentials);
             $this->current_user = $this->currentUser();
         } catch (InvalidArgumentException $exception) {
-            $this->resetCredentials($exception->getMessage());
+            $this->abort($exception->getMessage());
         } catch (\Exception $exception) {
-            $this->resetCredentials(
+            $this->abort(
                 $exception->getMessage() === 'Bad credentials'
                     ? 'Invalid token.'
                     : $exception->getMessage()
@@ -83,7 +83,7 @@ abstract class Command extends ZeroCommand
 
     protected function getCredentials(): array
     {
-        return $this->askForHost() === 'bitbucket'
+        return ($driver = $this->askForHost()) === 'bitbucket'
             ? $this->askForUsernamePassword()
             : $this->askForToken();
     }
@@ -100,8 +100,6 @@ abstract class Command extends ZeroCommand
             'bitbucket' => 'Bitbucket',
         ]);
 
-        $this->resetCredentials();
-
         Vault::set('driver', $driver);
 
         return $driver;
@@ -109,23 +107,23 @@ abstract class Command extends ZeroCommand
 
     protected function askForToken()
     {
-        if (!empty(Vault::get('token'))) {
-            return Vault::get('token');
-        }
+        $token = Vault::config('token');
 
-        Vault::set('token', $token = $this->secret('Token'));
+        if (empty($token)) {
+            Vault::config('token', $token = $this->secret('Token'));
+        }
 
         return [$token, null];
     }
 
     protected function askForUsernamePassword()
     {
-        if (!empty(Vault::get('username')) && !empty(Vault::get('password'))) {
-            $username = Vault::get('username');
-            $password = Vault::get('password');
-        } else {
-            Vault::set('username', $username = $this->ask('Username', Vault::get('username')));
-            Vault::set('password', $password = $this->secret('Password'));
+        $username = Vault::config('username');
+        $password = Vault::config('password');
+
+        if (empty($username) || empty($password)) {
+            Vault::config('username', $username = $this->ask('Username', $username));
+            Vault::config('password', $password = $this->secret('Password'));
         }
 
         return [$username, $password];
@@ -163,17 +161,5 @@ abstract class Command extends ZeroCommand
     protected function unsetLine($file, $key)
     {
         Env::unset($file, $key);
-    }
-
-    protected function resetCredentials($message = null)
-    {
-        Vault::unset('org');
-        Vault::unset('repo');
-        Vault::unset('token');
-        Vault::unset('password');
-
-        if ($message) {
-            $this->abort($message);
-        }
     }
 }

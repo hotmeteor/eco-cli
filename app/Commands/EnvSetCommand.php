@@ -32,8 +32,8 @@ class EnvSetCommand extends Command
 
         $value = $this->ask('What is the value?');
 
-        $org = Vault::get('org');
-        $repo = Vault::get('repo');
+        $org = Vault::config('org');
+        $repo = Vault::config('repo');
 
         Vault::set("{$org}.{$repo}.{$key}", $value);
 

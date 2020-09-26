@@ -27,7 +27,7 @@ class RepoCurrentCommand extends Command
      */
     public function handle()
     {
-        if (!$repo = Vault::get('repo')) {
+        if (!$repo = Vault::config('repo')) {
             $this->abort('Unable to determine current repo.');
         }
 

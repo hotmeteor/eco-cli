@@ -27,7 +27,7 @@ class OrgCurrentCommand extends Command
      */
     public function handle()
     {
-        if (!$org = Vault::get('org')) {
+        if (!$org = Vault::config('org')) {
             $this->abort('Unable to determine current organization.');
         }
 

@@ -31,7 +31,7 @@ class EnvFreshCommand extends Command
             $this->authenticate();
 
             $file = $this->driver()->getRemoteFile(
-                Vault::get('org'), Vault::get('repo'), $this->env_example_file
+                Vault::config('org'), Vault::config('repo'), $this->env_example_file
             );
 
             if (!$file) {

@@ -6,17 +6,21 @@ use Illuminate\Support\Arr;
 
 class Vault
 {
+    protected static $instance;
+
+    public static $root;
+
     /**
      * Get the given configuration value.
      *
      * @param string $key
      * @param mixed $default
      *
-     * @return string|null
+     * @return string|array|null
      */
     public static function get($key, $default = null)
     {
-        return Arr::get(static::load(), $key, $default);
+        return Arr::get(static::load(), self::buildKey($key), $default);
     }
 
     /**
@@ -31,7 +35,7 @@ class Vault
     {
         $config = static::load();
 
-        Arr::set($config, $key, trim($value));
+        Arr::set($config, self::buildKey($key), trim($value));
 
         file_put_contents(static::path(), json_encode($config, JSON_PRETTY_PRINT));
     }
@@ -47,7 +51,7 @@ class Vault
     {
         $config = static::load();
 
-        Arr::forget($config, $key);
+        Arr::forget($config, self::buildKey($key));
 
         file_put_contents(static::path(), json_encode($config, JSON_PRETTY_PRINT));
     }
@@ -71,6 +75,22 @@ class Vault
     }
 
     /**
+     * @param $key
+     * @param null $value
+     * @return array|string|null
+     */
+    public static function config($key, $value = null)
+    {
+        $driver = self::get('driver');
+
+        if ($value) {
+            self::set("drivers.{$driver}.{$key}", $value);
+        } else {
+            return self::get("drivers.{$driver}.{$key}");
+        }
+    }
+
+    /**
      * Get the path to the configuration file.
      *
      * @return string
@@ -78,5 +98,16 @@ class Vault
     protected static function path()
     {
         return config('app.home_path').'/.eco/config.json';
+    }
+
+    /**
+     * Namespace key as necessary.
+     *
+     * @param $key
+     * @return mixed|string
+     */
+    protected static function buildKey($key)
+    {
+        return self::$root ? implode('.', [self::$root, $key]) : $key;
     }
 }

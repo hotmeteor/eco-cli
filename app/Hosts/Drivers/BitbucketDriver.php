@@ -40,7 +40,7 @@ class BitbucketDriver extends Driver
 
     public function getCurrentUserRepositories($per_page = 100)
     {
-        return $this->getOwnerRepositories(Vault::get('username'));
+        return $this->getOwnerRepositories(Vault::config('username'));
     }
 
     public function getOwnerRepositories($owner, $per_page = 100)
@@ -92,11 +92,11 @@ class BitbucketDriver extends Driver
 
     public function mapOrganization($item): Organization
     {
-        return new Organization($item['slug'], $item['name']);
+        return new Organization($item['slug'], $item['slug']);
     }
 
     public function mapRepository($item): Repository
     {
-        return new Repository($item['uuid'], $item['name']);
+        return new Repository($item['name'], $item['name']);
     }
 }

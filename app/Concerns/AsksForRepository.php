@@ -9,9 +9,11 @@ trait AsksForRepository
 {
     protected function asksForRepository()
     {
-        $repos = Vault::get('org') === $this->currentUser()->login
+        $org = Vault::config('org');
+
+        $repos = $org === $this->currentUser()->login
             ? $this->driver()->getCurrentUserRepositories()
-            : $this->driver()->getOwnerRepositories(Vault::get('org'));
+            : $this->driver()->getOwnerRepositories($org);
 
         $id = $this->getRepositoryChoice($repos);
 

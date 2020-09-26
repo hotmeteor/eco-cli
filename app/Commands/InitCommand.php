@@ -71,14 +71,14 @@ class InitCommand extends Command
 
     protected function ensureCurrentOrgIsSet()
     {
-        Vault::set('org', $this->asksForOrganization());
+        Vault::config('org', $this->asksForOrganization());
 
         $this->info('Organization set successfully.');
     }
 
     protected function ensureCurrentRepoIsSet()
     {
-        Vault::set('repo', $this->asksForRepository());
+        Vault::config('repo', $this->asksForRepository());
 
         $this->info('Repository set successfully.');
     }

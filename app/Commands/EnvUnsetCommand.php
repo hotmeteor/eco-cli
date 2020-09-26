@@ -30,8 +30,8 @@ class EnvUnsetCommand extends Command
     {
         $key = $this->asksForKey();
 
-        $org = Vault::get('repo');
-        $repo = Vault::get('repo');
+        $org = Vault::config('org');
+        $repo = Vault::config('repo');
 
         Vault::unset("{$org}.{$repo}.{$key}");
 

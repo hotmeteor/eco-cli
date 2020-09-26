@@ -32,8 +32,8 @@ class OrgSwitchCommand extends Command
     {
         $this->authenticate();
 
-        Vault::set('org', $this->asksForOrganization());
-        Vault::unset('repo');
+        Vault::config('org', $this->asksForOrganization());
+        Vault::config('repo');
 
         $this->info('Organization set successfully.');
     }

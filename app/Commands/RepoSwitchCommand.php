@@ -39,7 +39,7 @@ class RepoSwitchCommand extends Command
             $name = $this->option('name');
         }
 
-        Vault::set('repo', $name);
+        Vault::config('repo', $name);
 
         $this->info('Repository set successfully.');
     }

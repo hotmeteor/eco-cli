@@ -33,8 +33,8 @@ class EnvSyncCommand extends Command
 
         $this->info('Syncing will use your local variables, but ask you about conflicting remote variables.');
 
-        $org = Vault::get('org');
-        $repo = Vault::get('repo');
+        $org = Vault::config('org');
+        $repo = Vault::config('repo');
 
         $this->task('Setting up file', function () {
             return $this->setupFile();

@@ -36,8 +36,8 @@ class EnvPushCommand extends Command
     {
         $this->authenticate();
 
-        $owner = Vault::get('org');
-        $repo = Vault::get('repo');
+        $owner = Vault::config('org');
+        $repo = Vault::config('repo');
 
         if (!$repo) {
             $this->abort('You must have an organization and repository selected.');
