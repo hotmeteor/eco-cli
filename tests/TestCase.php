@@ -18,15 +18,16 @@ abstract class TestCase extends BaseTestCase
 
         config(['app.env_path' => base_path('tests/Fixtures')]);
         config(['app.home_path' => base_path('tests/Fixtures')]);
-
-        Vault::set('org', 'my_org');
-        Vault::set('repo', 'my_repo');
-        Vault::set('token', 'my-token');
     }
 
     public static function envFile(): string
     {
         return config('app.env_path').'/.env';
+    }
+
+    public static function vaultFile(): string
+    {
+        return config('app.home_path').'/.eco/config.json';
     }
 
     public static function set($value): void
@@ -42,6 +43,7 @@ abstract class TestCase extends BaseTestCase
     protected function mockDriver($driver = 'fake')
     {
         Vault::set('driver', $driver);
+        Vault::config('token', 'my-token');
 
         $class = '\\App\\Hosts\\Drivers\\'.Str::studly("{$driver}_driver");
 

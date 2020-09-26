@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Concerns\AsksForHost;
 use App\Hosts\HostManager;
 use App\Support\KeyChoiceQuestion;
 use App\Support\Vault;
@@ -11,6 +12,8 @@ use LaravelZero\Framework\Commands\Command as ZeroCommand;
 
 abstract class Command extends ZeroCommand
 {
+    use AsksForHost;
+
     protected $host;
 
     protected $current_user;
@@ -94,13 +97,7 @@ abstract class Command extends ZeroCommand
             return Vault::get('driver');
         }
 
-        $driver = $this->keyChoice('What code host do you use?', [
-            'github' => 'Github',
-            'gitlab' => 'Gitlab',
-            'bitbucket' => 'Bitbucket',
-        ]);
-
-        Vault::set('driver', $driver);
+        Vault::set('driver', $driver = $this->asksForHost());
 
         return $driver;
     }

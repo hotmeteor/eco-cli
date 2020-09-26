@@ -1,21 +1,10 @@
 {
-    "my_org": {
-        "my_repo": {
-            "KEY": "value"
-        }
-    },
-    "hotmeteor": {
-        "eco-cli": {
-            "KEY": "value",
-            "THIS": "that",
-            "UP": "down"
-        }
-    },
-    "": {
-        "": []
-    },
     "driver": "fake",
-    "token": "my-token",
-    "org": "my_org",
-    "repo": "my_repo"
+    "drivers": {
+        "fake": {
+            "token": "my-token",
+            "org": "hotmeteor",
+            "repo": "eco-cli"
+        }
+    }
 }

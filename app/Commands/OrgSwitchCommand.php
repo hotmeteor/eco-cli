@@ -33,7 +33,7 @@ class OrgSwitchCommand extends Command
         $this->authenticate();
 
         Vault::config('org', $this->asksForOrganization());
-        Vault::config('repo');
+        Vault::config('repo', '');
 
         $this->info('Organization set successfully.');
     }

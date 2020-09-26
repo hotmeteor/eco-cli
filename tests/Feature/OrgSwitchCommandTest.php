@@ -11,8 +11,8 @@ class OrgSwitchCommandTest extends TestCase
 {
     public function test_should_switch_org()
     {
-        Vault::set('org', 'my_org');
-        Vault::set('repo', 'my_repo');
+        Vault::config('org', 'my_org');
+        Vault::config('repo', 'my_repo');
 
         $mock = $this->mockDriver();
 
@@ -31,7 +31,7 @@ class OrgSwitchCommandTest extends TestCase
             ->expectsOutput('Organization set successfully.')
             ->assertExitCode(0);
 
-        $this->assertSame('hotmeteor', Vault::get('org'));
-        $this->assertNull(Vault::get('repo'));
+        $this->assertSame('hotmeteor', Vault::config('org'));
+        $this->assertNull(Vault::config('repo'));
     }
 }

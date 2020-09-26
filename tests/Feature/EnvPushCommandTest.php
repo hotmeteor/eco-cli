@@ -3,15 +3,26 @@
 namespace Tests\Feature;
 
 use App\Hosts\Data\File;
+use App\Support\Vault;
 use Tests\TestCase;
 
 class EnvPushCommandTest extends TestCase
 {
-    public function test_should_push_and_create_file()
+    public function setUp(): void
     {
+        parent::setUp();
+
         self::reset();
 
+        Vault::config('org', 'hotmeteor');
+        Vault::config('repo', 'eco-cli');
+    }
+
+    public function test_should_push_and_create_file()
+    {
         $mock = $this->mockDriver();
+
+        $this->mockAuthenticate($mock);
 
         $mock->expects($this->once())
             ->method('getSecretKey')
@@ -44,8 +55,6 @@ class EnvPushCommandTest extends TestCase
 
     public function test_should_push_and_create_key()
     {
-        self::reset();
-
         $mock = $this->mockDriver();
 
         $mock->expects($this->once())
@@ -78,8 +87,6 @@ class EnvPushCommandTest extends TestCase
 
     public function test_should_push_and_update_key_with_confirmation()
     {
-        self::reset();
-
         $mock = $this->mockDriver();
 
         $mock->expects($this->once())
@@ -114,8 +121,6 @@ class EnvPushCommandTest extends TestCase
 
     public function test_should_push_and_not_update_key_without_confirmation()
     {
-        self::reset();
-
         $mock = $this->mockDriver();
 
         $mock->expects($this->once())

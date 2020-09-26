@@ -49,7 +49,7 @@ class Vault
      */
     public static function unset($key)
     {
-        $config = static::load();
+        $config = Arr::wrap(static::load());
 
         Arr::forget($config, self::buildKey($key));
 
@@ -83,7 +83,9 @@ class Vault
     {
         $driver = self::get('driver');
 
-        if ($value) {
+        if ($value === '') {
+            self::unset("drivers.{$driver}.{$key}");
+        } elseif ($value !== null) {
             self::set("drivers.{$driver}.{$key}", $value);
         } else {
             return self::get("drivers.{$driver}.{$key}");

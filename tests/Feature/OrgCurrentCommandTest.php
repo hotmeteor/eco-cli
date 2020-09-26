@@ -9,7 +9,7 @@ class OrgCurrentCommandTest extends TestCase
 {
     public function test_should_show_current_org()
     {
-        Vault::set('org', 'hotmeteor');
+        Vault::config('org', 'hotmeteor');
 
         $this->artisan('org:current')
             ->expectsOutput('You are currently working in the [hotmeteor] organization.')

@@ -5,22 +5,14 @@ namespace Tests\Feature;
 use App\Hosts\Data\Organization;
 use App\Hosts\Data\Repository;
 use App\Hosts\Data\User;
+use App\Hosts\HostManager;
 use App\Support\Vault;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class InitCommandTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Vault::unset('org');
-        Vault::unset('repo');
-        Vault::unset('driver');
-        Vault::unset('token');
-    }
-
-    public function test_it_init_with_personal()
+    public function test_it_init_with_token()
     {
         $mock = $this->mockDriver();
 
@@ -61,9 +53,9 @@ class InitCommandTest extends TestCase
             ->expectsOutput('Repository set successfully.');
 
         $this->assertSame(Vault::get('driver'), 'fake');
-        $this->assertSame(Vault::get('token'), 'my-token');
-        $this->assertSame(Vault::get('org'), 'hotmeteor');
-        $this->assertSame(Vault::get('repo'), 'eco-cli');
+        $this->assertSame(Vault::config('token'), 'my-token');
+        $this->assertSame(Vault::config('org'), 'hotmeteor');
+        $this->assertSame(Vault::config('repo'), 'eco-cli');
     }
 
     public function test_it_init_with_org()
@@ -107,8 +99,25 @@ class InitCommandTest extends TestCase
             ->expectsOutput('Repository set successfully.');
 
         $this->assertSame(Vault::get('driver'), 'fake');
-        $this->assertSame(Vault::get('token'), 'my-token');
-        $this->assertSame(Vault::get('org'), 'ecoorg');
-        $this->assertSame(Vault::get('repo'), 'eco-cli');
+        $this->assertSame(Vault::config('token'), 'my-token');
+        $this->assertSame(Vault::config('org'), 'ecoorg');
+        $this->assertSame(Vault::config('repo'), 'eco-cli');
+    }
+
+    protected function mockDriver($driver = 'fake')
+    {
+        file_put_contents(self::vaultFile(), '');
+
+        $class = '\\App\\Hosts\\Drivers\\'.Str::studly("{$driver}_driver");
+
+        $mock = $this->createMock(get_class(new $class()));
+
+        $manager = $this->app->get(HostManager::class);
+
+        $manager->extend($driver, function () use ($mock) {
+            return $mock;
+        });
+
+        return $mock;
     }
 }

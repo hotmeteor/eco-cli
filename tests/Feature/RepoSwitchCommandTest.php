@@ -10,8 +10,8 @@ class RepoSwitchCommandTest extends TestCase
 {
     public function test_should_switch_repo_using_id()
     {
-        Vault::set('org', 'hotmeteor');
-        Vault::set('repo', 'this_repo');
+        Vault::config('org', 'hotmeteor');
+        Vault::config('repo', 'this_repo');
 
         $mock = $this->mockDriver();
         $this->mockAuthenticate($mock);
@@ -30,14 +30,14 @@ class RepoSwitchCommandTest extends TestCase
             ->expectsOutput('Repository set successfully.')
             ->assertExitCode(0);
 
-        $this->assertSame('hotmeteor', Vault::get('org'));
-        $this->assertSame('other_repo', Vault::get('repo'));
+        $this->assertSame('hotmeteor', Vault::config('org'));
+        $this->assertSame('other_repo', Vault::config('repo'));
     }
 
     public function test_should_switch_repo_using_name()
     {
-        Vault::set('org', 'hotmeteor');
-        Vault::set('repo', 'this_repo');
+        Vault::config('org', 'hotmeteor');
+        Vault::config('repo', 'this_repo');
 
         $mock = $this->mockDriver();
         $this->mockAuthenticate($mock);
@@ -56,7 +56,7 @@ class RepoSwitchCommandTest extends TestCase
             ->expectsOutput('Repository set successfully.')
             ->assertExitCode(0);
 
-        $this->assertSame('hotmeteor', Vault::get('org'));
-        $this->assertSame('eco-cli', Vault::get('repo'));
+        $this->assertSame('hotmeteor', Vault::config('org'));
+        $this->assertSame('eco-cli', Vault::config('repo'));
     }
 }

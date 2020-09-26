@@ -14,8 +14,11 @@ class EnvSyncCommandTest extends TestCase
 
         self::reset();
 
-        Vault::set('org', 'hotmeteor');
-        Vault::set('repo', 'eco-cli');
+        Vault::config('org', 'hotmeteor');
+        Vault::config('repo', 'eco-cli');
+
+        Vault::unset('hotmeteor');
+
         Vault::set('hotmeteor.eco-cli.KEY', 'value');
         Vault::set('hotmeteor.eco-cli.THIS', 'that');
         Vault::set('hotmeteor.eco-cli.UP', 'down');
