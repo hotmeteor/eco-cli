@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class Helpers
 {
@@ -38,7 +39,10 @@ class Helpers
      */
     public static function formatKey($key)
     {
-        return strtoupper(trim($key));
+        $key = trim($key);
+        $key = !ctype_upper($key) ? strtoupper(Str::snake($key)) : $key;
+
+        return $key;
     }
 
     /**

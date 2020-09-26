@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Support\Helpers;
 use App\Support\Vault;
 
 class EnvSetCommand extends Command
@@ -30,10 +31,17 @@ class EnvSetCommand extends Command
     {
         $key = $this->asksForKey();
 
-        $value = $this->ask('What is the value?');
+        if (str_contains($key, '=')) {
+            [$key, $value] = explode('=', $key);
+        } else {
+            $value = $this->ask('What is the value?');
+        }
 
         $org = Vault::config('org');
         $repo = Vault::config('repo');
+
+        $key = Helpers::formatKey($key);
+        $value = Helpers::formatValue($value);
 
         Vault::set("{$org}.{$repo}.{$key}", $value);
 

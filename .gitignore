@@ -5,3 +5,5 @@
 .phpunit.result.cache
 .DS_Store
 .env
+!/tests/Fixtures/.eco/
+!/tests/Fixtures/.env

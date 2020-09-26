@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Support\Helpers;
 use App\Support\Vault;
 
 class EnvSyncCommand extends Command
@@ -100,6 +101,9 @@ class EnvSyncCommand extends Command
 
     protected function set($owner, $repo, $key, $value)
     {
+        $key = Helpers::formatKey($key);
+        $value = Helpers::formatValue($value);
+
         $this->setLine($this->envFile(), $key, $value);
 
         if ($this->option('store')) {

@@ -35,7 +35,7 @@ class Vault
     {
         $config = static::load();
 
-        Arr::set($config, self::buildKey($key), trim($value));
+        Arr::set($config, self::buildKey($key), is_array($value) ? $value : trim($value));
 
         file_put_contents(static::path(), json_encode($config, JSON_PRETTY_PRINT));
     }

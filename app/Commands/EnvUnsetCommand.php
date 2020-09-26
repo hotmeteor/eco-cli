@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Support\Helpers;
 use App\Support\Vault;
 
 class EnvUnsetCommand extends Command
@@ -32,6 +33,8 @@ class EnvUnsetCommand extends Command
 
         $org = Vault::config('org');
         $repo = Vault::config('repo');
+
+        $key = Helpers::formatKey($key);
 
         Vault::unset("{$org}.{$repo}.{$key}");
 
