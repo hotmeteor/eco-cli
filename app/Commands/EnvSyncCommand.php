@@ -72,25 +72,29 @@ class EnvSyncCommand extends Command
 
     protected function assignRemoteValues($owner, $repo)
     {
-        $file = $this->driver()->getRemoteFile(
-            $owner, $repo, $this->vaultFile()
-        );
+        try {
+            $file = $this->driver()->getRemoteFile(
+                $owner, $repo, $this->vaultFile()
+            );
 
-        $data = $this->driver()->decryptContents(
-            $file->contents, $this->driver()->getSecretKey($owner, $repo)
-        );
+            $data = $this->driver()->decryptContents(
+                $file->contents, $this->driver()->getSecretKey($owner, $repo)
+            );
 
-        foreach ($data as $key => $value) {
-            if (!$this->option('force') && $this->findLine($this->envFile(), $key)) {
-                if ($this->confirm("The {$key} variable already exists in your local .env. Do you want to overwrite it?")) {
+            foreach ($data as $key => $value) {
+                if (!$this->option('force') && $this->findLine($this->envFile(), $key)) {
+                    if ($this->confirm("The {$key} variable already exists in your local .env. Do you want to overwrite it?")) {
+                        $this->set($key, $value);
+                    }
+                } else {
                     $this->set($key, $value);
                 }
-            } else {
-                $this->set($key, $value);
             }
-        }
 
-        return true;
+            return true;
+        } catch (\Exception $exception) {
+            $this->danger('There was an issue with the remote file.');
+        }
     }
 
     protected function set($key, $value)

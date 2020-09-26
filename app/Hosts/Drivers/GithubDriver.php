@@ -8,6 +8,7 @@ use App\Hosts\Data\Repository;
 use App\Hosts\Data\User;
 use Github\Client;
 use Github\HttpClient\Message\ResponseMediator;
+use Illuminate\Support\Collection;
 
 class GithubDriver extends Driver
 {
@@ -28,21 +29,21 @@ class GithubDriver extends Driver
         return new User($user['id'], $user['login']);
     }
 
-    public function getOrganizations()
+    public function getOrganizations(): Collection
     {
         return $this->collectOrganizations(
             $this->client()->currentUser()->organizations()
         );
     }
 
-    public function getOwnerRepositories($owner, $per_page = 100)
+    public function getOwnerRepositories($owner, $per_page = 100): Collection
     {
         return $this->collectRepositories(
             $this->client()->api('organization')->setPerPage($per_page)->repositories($owner)
         );
     }
 
-    public function getCurrentUserRepositories($per_page = 100)
+    public function getCurrentUserRepositories($per_page = 100): Collection
     {
         return $this->collectRepositories(
             $this->client()->currentUser()->setPerPage($per_page)->repositories()

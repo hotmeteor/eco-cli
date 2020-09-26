@@ -39,6 +39,10 @@ class EnvPushCommand extends Command
         $owner = Vault::get('org');
         $repo = Vault::get('repo');
 
+        if (!$repo) {
+            $this->abort('You must have an organization and repository selected.');
+        }
+
         $key = $this->asksForKey();
 
         $value = $this->ask('What is the value?');

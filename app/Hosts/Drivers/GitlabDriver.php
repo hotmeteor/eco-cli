@@ -7,7 +7,8 @@ use App\Hosts\Data\Organization;
 use App\Hosts\Data\Repository;
 use App\Hosts\Data\User;
 use Gitlab\Client;
-use Gitlab\HttpClient\Message\ResponseMediator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class GitlabDriver extends Driver
 {
@@ -35,17 +36,19 @@ class GitlabDriver extends Driver
 
     public function getCurrentUser(): User
     {
-        return $this->client()->users()->me();
+        $user = $this->client()->users()->me();
+
+        return new User($user['id'], $user['username']);
     }
 
-    public function getOrganizations()
+    public function getOrganizations(): Collection
     {
         return $this->collectOrganizations(
             $this->client()->groups()->all()
         );
     }
 
-    public function getCurrentUserRepositories($per_page = 100)
+    public function getCurrentUserRepositories($per_page = 100): Collection
     {
         return $this->collectRepositories(
             $this->client()->projects()->all([
@@ -56,7 +59,7 @@ class GitlabDriver extends Driver
         );
     }
 
-    public function getOwnerRepositories($owner, $per_page = 100)
+    public function getOwnerRepositories($owner, $per_page = 100): Collection
     {
         return $this->collectRepositories(
             $this->client()->projects()->all([
@@ -68,21 +71,19 @@ class GitlabDriver extends Driver
 
     public function getRepository($owner, $name)
     {
-        return $this->client()->projects()->show(urlencode($name));
+        return $this->client()->projects()->show("$owner/$name");
     }
 
     public function getSecretKey($owner, $repository)
     {
-        $id = urlencode($repository);
-
-        $response = $this->client()->getHttpClient()->get("/projects/{$id}/deploy_keys");
-
-        $content = ResponseMediator::getContent($response);
-
-        $keys = collect($content)->whereIn('title', ['eco', 'main']);
+        $keys = collect($this->client()->projects()->deployKeys("$owner/$repository"));
 
         if ($keys->isNotEmpty()) {
-            return $keys->first()->key;
+            $key = $keys->first()['key'];
+            $key = trim(Str::between($key, 'ssh-ed25519', 'Gitlab'));
+            $key = substr($key, 0, SODIUM_CRYPTO_SECRETBOX_KEYBYTES);
+
+            return base64_encode($key);
         }
 
         return null;
@@ -91,7 +92,7 @@ class GitlabDriver extends Driver
     public function getRemoteFile($owner, $repository, $filename): File
     {
         $response = $this->client()->repositoryFiles()->getFile(
-            $repository, $filename, 'master'
+            "$owner/$repository", $filename, 'master'
         );
 
         return new File(
@@ -103,7 +104,7 @@ class GitlabDriver extends Driver
     public function createRemoteFile($owner, $repository, $file, $contents, $message)
     {
         return $this->client()->repositoryFiles()->createFile(
-            urlencode($repository), [
+            "$owner/$repository", [
                 'branch' => 'master',
                 'file_path' => urlencode($file),
                 'content' => $contents,
@@ -115,7 +116,7 @@ class GitlabDriver extends Driver
     public function updateRemoteFile($owner, $repository, $file, $contents, $message, $sha = null)
     {
         return $this->client()->repositoryFiles()->updateFile(
-            urlencode($repository), [
+            "$owner/$repository", [
                 'branch' => 'master',
                 'file_path' => urlencode($file),
                 'content' => $contents,
