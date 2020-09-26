@@ -17,9 +17,9 @@ class GithubDriver extends Driver
         return $this->client;
     }
 
-    public function authenticate($token)
+    public function authenticate($tokenOrUsername, $password = null)
     {
-        $this->client()->authenticate($token, null, Client::AUTH_ACCESS_TOKEN);
+        $this->client()->authenticate($tokenOrUsername, null, Client::AUTH_ACCESS_TOKEN);
     }
 
     public function getCurrentUser(): User

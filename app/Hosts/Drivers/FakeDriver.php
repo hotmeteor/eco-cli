@@ -5,7 +5,6 @@ namespace App\Hosts\Drivers;
 use App\Hosts\Data\File;
 use App\Hosts\Data\Organization;
 use App\Hosts\Data\Repository;
-use Illuminate\Support\Collection;
 
 class FakeDriver extends Driver
 {
@@ -13,7 +12,7 @@ class FakeDriver extends Driver
     {
     }
 
-    public function authenticate($token)
+    public function authenticate($tokenOrUsername, $password = null)
     {
     }
 

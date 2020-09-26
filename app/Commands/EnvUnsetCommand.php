@@ -21,10 +21,6 @@ class EnvUnsetCommand extends Command
      */
     protected $description = 'Unset and delete a local variable';
 
-    public $aliases = [
-//        'unset',
-    ];
-
     /**
      * Execute the console command.
      *

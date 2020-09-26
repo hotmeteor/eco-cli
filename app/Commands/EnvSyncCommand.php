@@ -12,7 +12,8 @@ class EnvSyncCommand extends Command
      * @var string
      */
     protected $signature = 'env:sync
-                            {--F|force : Automatically accept all remote values}';
+                            {--F|force : Automatically accept all remote values}
+                            {--S|store : Store all values in your vault}';
 
     /**
      * The description of the command.
@@ -84,10 +85,10 @@ class EnvSyncCommand extends Command
             foreach ($data as $key => $value) {
                 if (!$this->option('force') && $this->findLine($this->envFile(), $key)) {
                     if ($this->confirm("The {$key} variable already exists in your local .env. Do you want to overwrite it?")) {
-                        $this->set($key, $value);
+                        $this->set($owner, $repo, $key, $value);
                     }
                 } else {
-                    $this->set($key, $value);
+                    $this->set($owner, $repo, $key, $value);
                 }
             }
 
@@ -97,8 +98,12 @@ class EnvSyncCommand extends Command
         }
     }
 
-    protected function set($key, $value)
+    protected function set($owner, $repo, $key, $value)
     {
         $this->setLine($this->envFile(), $key, $value);
+
+        if ($this->option('store')) {
+            Vault::set("{$owner}.{$repo}.{$key}", $value);
+        }
     }
 }

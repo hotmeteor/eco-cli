@@ -17,21 +17,11 @@ class GitlabDriver extends Driver
         return $this->client;
     }
 
-    public function authenticate($token)
+    public function authenticate($tokenOrUsername, $password = null)
     {
-        if (isset($_ENV['GITLAB_API_TOKEN']) || getenv('GITLAB_API_TOKEN')) {
-            return;
-        }
+        // $this->driver()->setUrl('https://git.yourdomain.com');
 
-        try {
-//            $this->driver()->setUrl('https://git.yourdomain.com');
-
-            $this->client()->authenticate(
-                $token, Client::AUTH_HTTP_TOKEN
-            );
-        } catch (\Exception $exception) {
-            throw new \Exception("Please authenticate using the 'install' command before proceeding.");
-        }
+        $this->client()->authenticate($tokenOrUsername, Client::AUTH_HTTP_TOKEN);
     }
 
     public function getCurrentUser(): User

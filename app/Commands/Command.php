@@ -41,7 +41,7 @@ abstract class Command extends ZeroCommand
 
     protected function driver()
     {
-        return $this->host->driver();
+        return $this->host->driver(Vault::get('driver'));
     }
 
     public function envFile()
@@ -61,20 +61,14 @@ abstract class Command extends ZeroCommand
      */
     public function authenticate()
     {
-        $token = empty(Vault::get('token'))
-            ? $this->getToken()
-            : Vault::get('token');
-
-        $this->driver()->authenticate($token);
-
         try {
-            $this->current_user = $this->driver()->getCurrentUser();
-
-            Vault::set('token', $token);
+            $credentials = $this->getCredentials();
+            call_user_func_array([$this->driver(), 'authenticate'], $credentials);
+            $this->current_user = $this->currentUser();
         } catch (InvalidArgumentException $exception) {
-            $this->abort($exception->getMessage());
+            $this->resetCredentials($exception->getMessage());
         } catch (\Exception $exception) {
-            $this->abort(
+            $this->resetCredentials(
                 $exception->getMessage() === 'Bad credentials'
                     ? 'Invalid token.'
                     : $exception->getMessage()
@@ -87,20 +81,54 @@ abstract class Command extends ZeroCommand
         return $this->current_user ?? $this->driver()->getCurrentUser();
     }
 
-    protected function getToken()
+    protected function getCredentials(): array
     {
+        return $this->askForHost() === 'bitbucket'
+            ? $this->askForUsernamePassword()
+            : $this->askForToken();
+    }
+
+    protected function askForHost()
+    {
+        if (!empty(Vault::get('driver'))) {
+            return Vault::get('driver');
+        }
+
         $driver = $this->keyChoice('What code host do you use?', [
             'github' => 'Github',
             'gitlab' => 'Gitlab',
             'bitbucket' => 'Bitbucket',
         ]);
 
-        $token = $this->secret('Token');
+        $this->resetCredentials();
 
         Vault::set('driver', $driver);
-        Vault::set('token', $token);
 
-        return $token;
+        return $driver;
+    }
+
+    protected function askForToken()
+    {
+        if (!empty(Vault::get('token'))) {
+            return Vault::get('token');
+        }
+
+        Vault::set('token', $token = $this->secret('Token'));
+
+        return [$token, null];
+    }
+
+    protected function askForUsernamePassword()
+    {
+        if (!empty(Vault::get('username')) && !empty(Vault::get('password'))) {
+            $username = Vault::get('username');
+            $password = Vault::get('password');
+        } else {
+            Vault::set('username', $username = $this->ask('Username', Vault::get('username')));
+            Vault::set('password', $password = $this->secret('Password'));
+        }
+
+        return [$username, $password];
     }
 
     public function abort($text)
@@ -135,5 +163,17 @@ abstract class Command extends ZeroCommand
     protected function unsetLine($file, $key)
     {
         Env::unset($file, $key);
+    }
+
+    protected function resetCredentials($message = null)
+    {
+        Vault::unset('org');
+        Vault::unset('repo');
+        Vault::unset('token');
+        Vault::unset('password');
+
+        if ($message) {
+            $this->abort($message);
+        }
     }
 }

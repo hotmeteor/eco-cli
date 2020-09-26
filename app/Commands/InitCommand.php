@@ -57,7 +57,7 @@ class InitCommand extends Command
 //        $this->info('To start, you will need a Github Personal Access token.');
 //        $this->comment('https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token');
 
-        Vault::set('token', '');
+        Vault::unset('driver');
 
         $this->authenticate();
 

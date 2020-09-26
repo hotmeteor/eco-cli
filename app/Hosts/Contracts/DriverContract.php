@@ -6,7 +6,7 @@ use App\Hosts\Data\File;
 
 interface DriverContract
 {
-    public function authenticate($token);
+    public function authenticate($tokenOrUsername, $password = null);
 
     public function getCurrentUser();
 
