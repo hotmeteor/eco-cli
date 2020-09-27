@@ -38,15 +38,39 @@ $ composer global require hotmeteor/eco-cli
 
 ### Getting Started
 
-Once Eco is installed it needs to be set up. Ideally, this is done within the folder for the project you are collaborating on. 
+Once Eco is installed it needs to be set up. Ideally, this is done within the folder for the project you are collaborating on.
 
-A [Github Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) is required. It should be created with the `repo` and `read:org` permissions.
+There are different setups depending on what code host your team uses.
 
-```shell script
-$ eco init
-```
+#### Github 
 
-You will be asked to select the owner or organization to act under, as well as the repository for the current project.
+**Github** requires a personal access token.
+
+1. Create a [Github Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) is required. 
+    - Choose `repo` and `read:org` permissions
+
+#### Gitlab
+
+**Gitlab** requires a personal access token and a Deploy Key.
+
+1. Create a Personal Access Token: https://gitlab.com/profile/personal_access_tokens
+    - Choose `api` privileges
+2. Create a Deploy Key for your project: https://gitlab.com/[group]/[project]/-/settings/repository
+    - Name it `eco-cli`
+    - Make sure "Write access allowed" is checked
+    
+#### Bitbucket
+
+**Bitbucket** requires an App Password and an Access Key.
+
+1. Create an App Password: https://bitbucket.org/account/settings/app-passwords/
+    - Select:
+        - Account Email, Read
+        - Project Read
+        - Repositories Read, Write, Admin
+2. Create an Access Key for your project: https://bitbucket.org/[workspace]/[project]/admin/access-keys/
+    - Name it `eco-cli`
+3. When authenticating Eco, your credentials will be your typical Bitbucket username and your new app password.
 
 ## Usage
 
@@ -57,7 +81,14 @@ Eco comes with a number of commands to manage local and remote environment varia
 ```sh
 $ eco init
 ```
-Should be the first thing you run after installing. As seen above, it requires a Github PAT.
+The first thing you run after installing. 
+
+You will be asked to select the code host your team uses, as well as provide the proper credentials. You will then be asked to select the owner or organization to act under, as well as the repository for the current project.
+
+```sh
+$ eco vault
+```
+View all the values in your Vault.
 
 #### Organizations
 
@@ -122,10 +153,10 @@ Push a key:value pair into the remote `.eco` file.
 
 
 ```sh
-$ eco env:pull
+$ eco env:sync
 ```
 
-Fetch a key:value pair from the remote `.eco` file and add or update it in your local `.env` file.
+Sync all key:value pairs from the remote `.eco` file with your local `.env` file. You will be asked to confirm before overwriting any local values with remote values.
 
 ## Contributing
 
@@ -133,4 +164,6 @@ If you're interested in contributing to Eco, please read our [contributing guide
 
 #### Acknowledgments
 
-Big thanks to the work done on the [Vapor CLI](https://github.com/laravel/vapor-cli), which provided some foundational code for this CLI.
+Built on the fantastic [Laravel Zero](https://laravel-zero.com/) framework by [@nunomaduro](https://github.com/nunomaduro)
+
+Inspired by the work done on the [Vapor CLI](https://github.com/laravel/vapor-cli), which provided some foundational code for this CLI.
