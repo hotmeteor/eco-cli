@@ -27,6 +27,12 @@ class InitCommand extends Command
      */
     protected $description = 'Set up Eco CLI';
 
+    protected $help = '
+    <question>Github:</question> <href=https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token>https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token</>
+    <question>Gitlab:</question> <href=https://gitlab.com/profile/personal_access_tokens>https://gitlab.com/profile/personal_access_tokens</>
+    <question>Bitbucket:</question> <href=https://bitbucket.org/account/settings/app-passwords/>https://bitbucket.org/account/settings/app-passwords/</>
+    ';
+
     /**
      * Execute the console command.
      *

@@ -40,6 +40,10 @@ abstract class Command extends ZeroCommand
         $this->host = app(HostManager::class);
 
         $this->setAliases($this->aliases);
+
+        if (!Vault::get('version')) {
+            Vault::set('version', app('git.version'));
+        }
     }
 
     protected function driver()

@@ -44,10 +44,14 @@ There are different setups depending on what code host your team uses.
 
 #### Github 
 
-1. A [Github Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) is required. 
+**Github** requires a personal access token.
+
+1. Create a [Github Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) is required. 
     - Choose `repo` and `read:org` permissions
 
 #### Gitlab
+
+**Gitlab** requires a personal access token and a Deploy Key.
 
 1. Create a Personal Access Token: https://gitlab.com/profile/personal_access_tokens
     - Choose `api` privileges
@@ -57,6 +61,8 @@ There are different setups depending on what code host your team uses.
     
 #### Bitbucket
 
+**Bitbucket** requires an App Password and an Access Key.
+
 1. Create an App Password: https://bitbucket.org/account/settings/app-passwords/
     - Select:
         - Account Email, Read
@@ -64,6 +70,7 @@ There are different setups depending on what code host your team uses.
         - Repositories Read, Write, Admin
 2. Create an Access Key for your project: https://bitbucket.org/[workspace]/[project]/admin/access-keys/
     - Name it `eco-cli`
+3. When authenticating Eco, your credentials will be your typical Bitbucket username and your new app password.
 
 ## Usage
 
