@@ -8,3 +8,4 @@
 tests/Fixtures/.eco/*
 tests/Fixtures/.eco
 tests/Fixtures/.env
+/public/
