@@ -58,5 +58,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["eco"]
+    "bin": ["builds/eco"]
 }
