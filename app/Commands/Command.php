@@ -73,8 +73,12 @@ abstract class Command extends ZeroCommand
             call_user_func_array([$this->driver(), 'authenticate'], $credentials);
             $this->current_user = $this->currentUser();
         } catch (InvalidArgumentException $exception) {
+            $this->resetCredentials();
+
             $this->abort($exception->getMessage());
         } catch (\Exception $exception) {
+            $this->resetCredentials();
+
             $this->abort(
                 $exception->getMessage() === 'Bad credentials'
                     ? 'Invalid token.'
@@ -86,6 +90,13 @@ abstract class Command extends ZeroCommand
     protected function currentUser()
     {
         return $this->current_user ?? $this->driver()->getCurrentUser();
+    }
+
+    protected function resetCredentials()
+    {
+        Vault::config('token', '');
+        Vault::config('username', '');
+        Vault::config('password', '');
     }
 
     protected function getCredentials(): array
