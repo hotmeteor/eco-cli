@@ -25,7 +25,7 @@ return [
     |
     */
 
-    'font' => __DIR__.'/../resources/fonts/collosal.flf',
+    'font' => base_path('resources/fonts/collosal.flf'),
 
     /*
     |--------------------------------------------------------------------------

@@ -19,16 +19,16 @@
         "ext-json": "*",
         "ext-sodium": "*",
         "bitbucket/client": "^3.1",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^6.5.5|^7.1.0",
         "hotmeteor/eco-env": "^1.0",
         "http-interop/http-factory-guzzle": "^1.0",
-        "illuminate/container": "^6.0|^7.0|^8.0",
-        "illuminate/filesystem": "^6.0|^7.0|^8.0",
-        "illuminate/log": "^8.0",
-        "illuminate/support": "^6.0|^7.0|^8.0",
+        "illuminate/container": "^6.0|^7.0",
+        "illuminate/filesystem": "^6.0|^7.0",
+        "illuminate/log": "^7.0",
+        "illuminate/support": "^6.0|^7.0",
         "knplabs/github-api": "^3.0",
         "laminas/laminas-text": "^2.7",
-        "laravel-zero/framework": "^8.0",
+        "laravel-zero/framework": "^7.0",
         "m4tthumphrey/php-gitlab-api": "^10.0",
         "padraic/phar-updater": "^1.0.6",
         "ramsey/uuid": "^3.8|^4.0",
@@ -39,7 +39,7 @@
     },
     "require-dev": {
         "mockery/mockery": "^1.4.2",
-        "phpunit/phpunit": "^9.3"
+        "phpunit/phpunit": "^8.5"
     },
     "autoload": {
         "psr-4": {
@@ -58,5 +58,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["builds/eco"]
+    "bin": ["eco"]
 }
