@@ -16,6 +16,8 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
+        file_put_contents(__DIR__.'/Fixtures/.env', '');
+
         config(['app.env_path' => base_path('tests/Fixtures')]);
         config(['app.home_path' => base_path('tests/Fixtures')]);
     }
